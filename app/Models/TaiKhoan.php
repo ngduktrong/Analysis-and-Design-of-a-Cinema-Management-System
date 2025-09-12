@@ -4,9 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class TaiKhoan extends Model
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Sanctum\HasApiTokens;
+
+class TaiKhoan extends Authenticatable
 {
-    protected $table = 'tai_khoan';
+    use HasApiTokens;
+    protected $table = 'taikhoan';
     protected $primaryKey = 'TenDangNhap'; 
     public $incrementing = false;         
     public $timestamps = false;
@@ -26,6 +30,9 @@ class TaiKhoan extends Model
     public function setLoaiTaiKhoanAttribute($value)
     {
         $this->attributes['LoaiTaiKhoan'] = strtolower($value) === self::ADMIN ? self::ADMIN : self::USER;
+    }
+    public function nguoiDung(){
+        return $this->belongsTo(NguoiDung::class,'MaNguoiDung','MaNguoiDung');
     }
 
    

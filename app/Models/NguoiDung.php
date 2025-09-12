@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class NguoiDung extends Model
 {
-    protected $table = 'nguoi_dung';        
+    protected $table = 'nguoidung';        
     protected $primaryKey = 'MaNguoiDung';
     public $timestamps = false;             
 
@@ -20,4 +20,14 @@ class NguoiDung extends Model
     
     const LOAI_KHACHHANG = 'KhachHang';
     const LOAI_NHANVIEN = 'NhanVien';
+
+    public function nhanVien(){
+        return $this->hasOne(NhanVien::class,'MaNguoiDung','MaNguoiDung');
+    }
+    public function khachHang(){
+        return $this->hasOne(KhachHang::class,'MaNguoiDung','MaNguoiDung');
+    }
+    public function taiKhoan(){
+        return $this->hasOne(TaiKhoan::class,'MaNguoiDung','MaNguoiDung');
+    }
 }

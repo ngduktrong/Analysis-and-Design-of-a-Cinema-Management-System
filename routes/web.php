@@ -10,6 +10,5 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/phim',[PhimController::class,'index']);
+Route::resource('phim',PhimController::class);
 
-Route::get('/nguoi_dung', [UserController::class, 'index']);

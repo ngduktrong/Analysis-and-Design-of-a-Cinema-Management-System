@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class NhanVien extends NguoiDung
 {
-    protected $table = 'nhan_vien';
+    protected $table = 'nhanvien';
     protected $primaryKey = 'MaNguoiDung';
     public $incrementing = false; 
     public $timestamps = false;
@@ -48,9 +48,12 @@ class NhanVien extends NguoiDung
         $this->attributes['VaiTro'] = in_array($value, $roles) ? $value : self::VAITRO_BANVE;
     }
 
+ 
+
     
     public function getLuongFormattedAttribute()
     {
         return number_format($this->Luong, 0, ',', '.') . ' VND';
     }
+
 }
