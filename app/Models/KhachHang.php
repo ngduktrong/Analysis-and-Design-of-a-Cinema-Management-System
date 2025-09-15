@@ -4,9 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class KhachHang extends NguoiDung
+class KhachHang extends Model
 {
-    protected $table = 'khach_hang';
+    protected $table = 'khachhang';
     protected $primaryKey = 'MaNguoiDung';
     public $incrementing = false; 
     public $timestamps = false;

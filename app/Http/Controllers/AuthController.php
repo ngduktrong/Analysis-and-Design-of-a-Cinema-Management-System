@@ -9,6 +9,7 @@ use App\Models\NguoiDung;
 use App\Models\TaiKhoan;
 use App\Models\NhanVien;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 class AuthController extends Controller
 {
     //dang nhap
@@ -20,17 +21,19 @@ class AuthController extends Controller
         // tim tai khoan
         $account = TaiKhoan::where('TenDangNhap',$request->ten_dang_nhap)->first();
         if(!$account || !Hash::check($request->mat_khau,$account->MatKhau)){
-            return response()->json((['message'=>'Sai tai khoan hoac mat khau !']),401);
+            return back()->with('error','Sai tai khoan hoac mat khau !');
 
         }
         // cung cap token 
-        $token = $account->createToken('auth_token')->plainTextToken;
-        return response()->json([
-            'message'=>'Dang nhap thanh cong',
-            'token'=> $token,
-            'user'=>$account-> nguoiDung
+        // $token = $account->createToken('auth_token')->plainTextToken;
+        // return redirect()->route('home')->with([
+        //     'success'=>'Đăng nhập thành công',
+        //     'token'=> $token,
+        //     'user'=>$account-> nguoiDung
 
-        ]);
+        // ]);
+        Auth::login($account);
+        return redirect()->route('home')->with(['success'=>'Đăng nhập thành công']);
         
     }
     //dang ky
@@ -40,24 +43,33 @@ class AuthController extends Controller
             'email'=> 'required|string|max:255|unique:NguoiDung,email',
             'mat_khau'=>'required|string|min:6',
             'so_dien_thoai'=>'required|string|max:15|unique:NguoiDung,SoDienThoai',
-            'loai'=> 'required|in:KhachHang,NhanVien',
-            'ten_dang_nhap'=>'required|string|max:50|unique:tai_khoan,TenDangNhap'
+            
+            'ten_dang_nhap'=>'required|string|max:50|unique:taikhoan,TenDangNhap'
         ]);
 
         $user = NguoiDung::create([
             'HoTen'=>$request->ho_ten,
             'Email'=>$request->email,
             'SoDienThoai'=>$request->so_dien_thoai,
-            'LoaiNguoiDung'=>$request->loai_nguoi_dung
+            'LoaiNguoiDung'=> NguoiDung::LOAI_KHACHHANG
         ]);
         //tao tai khoan
         TaiKhoan::create([
             'TenDangNhap'=>$request->ten_dang_nhap,
             'MatKhau'=>Hash::make($request->mat_khau),
-            'LoaiTaiKhoan'=> $request->loai === 'KhachHang' ? TaiKhoan::USER : TaiKhoan::ADMIN,
-            'MaNguoiDung'=> $user->MaNguoidung
+            'LoaiTaiKhoan'=>TaiKhoan::USER,
+            'MaNguoiDung'=>$user->MaNguoiDung
         ]);
-        if($request->loai == 'KhachHang')
+        
+        KhachHang::create([
+             'MaNguoiDung'=>$user->MaNguoiDung,
+             'DiemTichLuy'=>0,
+            ]);
+        return redirect()->route('auth.loginForm')->with('success','Đăng ký thành công, vui lòng đăng nhập');
+
+        
+       
+        
     }
 
 }

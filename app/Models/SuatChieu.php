@@ -36,4 +36,7 @@ class SuatChieu extends Model
     {
         return $this->belongsTo(PhongChieu::class, 'MaPhong', 'MaPhong');
     }
+    public function ve(){
+        return $this->hasMany(Ve::class,'MaSuatChieu','MaSuatChieu');
+    }
 }

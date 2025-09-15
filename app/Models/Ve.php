@@ -46,4 +46,9 @@ class Ve extends Model
         if (!$this->NgayGioChieu) return '';
         return \Carbon\Carbon::parse($this->NgayGioChieu)->format('d-m-Y H:i');
     }
+
+    public function getGiaVeAttribute($value)
+    {
+    return $value ?? 50000; 
+    }
 }

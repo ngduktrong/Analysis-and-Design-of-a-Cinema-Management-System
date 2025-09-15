@@ -20,5 +20,5 @@
         
         @endforeach
     </ul>
-</body>
+</body
 </html>
