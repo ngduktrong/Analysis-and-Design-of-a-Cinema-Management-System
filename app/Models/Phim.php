@@ -2,14 +2,25 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Phim extends Model
 {
-  
-    protected $table = 'phim';
+    use HasFactory;
+
+    
+    protected $table = 'Phim';
+
+    
     protected $primaryKey = 'MaPhim';
-    public $timestamps = false; 
+
+    
+    public $incrementing = true;
+    protected $keyType = 'int';
+
+    
+    public $timestamps = false;
 
     
     protected $fillable = [
@@ -23,12 +34,14 @@ class Phim extends Model
         'DuongDanPoster'
     ];
 
-    
-    public function getNgayKhoiChieuFormattedAttribute()
+    protected $casts = [
+        'NgayKhoiChieu' => 'date',
+        'ThoiLuong' => 'integer'
+    ];
+
+   
+    public function suatChieus()
     {
-        if (!$this->NgayKhoiChieu) {
-            return null;
-        }
-        return date('d-m-Y', strtotime($this->NgayKhoiChieu));
+        return $this->hasMany(SuatChieu::class, 'MaPhim', 'MaPhim');
     }
 }
