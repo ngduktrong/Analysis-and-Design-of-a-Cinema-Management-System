@@ -13,7 +13,7 @@ class CustomerGheController extends Controller
     public function index($maSuatChieu){
         $suatchieu = SuatChieu::with('phong')->findOrFail($maSuatChieu);
         // lay ra ghe da dat va danh dau
-        $vedat = Ve::where('MaSuatChieu',$suatchieu)->pluck('SoGhe')->toArray();
+        $vedat = Ve::where('MaSuatChieu',$suatchieu->MaSuatChieu)->pluck('SoGhe')->toArray();
         return view('GheIndex',compact('suatchieu','vedat'));
     }
     //chon ghe

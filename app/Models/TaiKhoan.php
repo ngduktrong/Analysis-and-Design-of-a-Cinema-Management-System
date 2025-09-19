@@ -11,8 +11,9 @@ class TaiKhoan extends Authenticatable
 {
     use HasApiTokens;
     protected $table = 'taikhoan';
-    protected $primaryKey = 'TenDangNhap'; 
-    public $incrementing = false;         
+    protected $primaryKey = 'MaNguoiDung'; 
+    public $incrementing = false;  
+    protected $keyType = 'int';       
     public $timestamps = false;
 
     protected $fillable = [
@@ -37,4 +38,8 @@ class TaiKhoan extends Authenticatable
 
    
     protected $hidden = ['MatKhau'];
+    public function getAuthPassword()
+{
+    return $this->MatKhau;
+}
 }

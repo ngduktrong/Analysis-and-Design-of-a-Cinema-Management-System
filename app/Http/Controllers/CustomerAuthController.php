@@ -14,21 +14,20 @@ class CustomerAuthController extends Controller
 {
     //dang nhap
     public function login(Request $request){
-        $request->validate([
-            'ten_dang_nhap' => 'required|string',
-            'mat_khau' => 'required|string'
-        ]);
-        // tim tai khoan
-        $account = TaiKhoan::where('TenDangNhap',$request->ten_dang_nhap)->first();
-        if(!$account || !Hash::check($request->mat_khau,$account->MatKhau)){
-            return back()->with('error','Sai tai khoan hoac mat khau !');
+    $request->validate([
+        'ten_dang_nhap' => 'required|string',
+        'mat_khau' => 'required|string'
+    ]);
 
-        }
-       
-        Auth::login($account);
-        return redirect()->intended(route('home'))->with('success','Đăng nhập thành công');
-        
+    if (Auth::guard('web')->attempt([
+        'TenDangNhap' => $request->ten_dang_nhap,
+        'password' => $request->mat_khau,
+    ])) {
+        return redirect()->intended(route('home'))->with('success', 'Đăng nhập thành công');
     }
+
+    return back()->with('error','Sai tài khoản hoặc mật khẩu!');
+}
     //dang ky
     public function register(Request $request){
         $request->validate([
