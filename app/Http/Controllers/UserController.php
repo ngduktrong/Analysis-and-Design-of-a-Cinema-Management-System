@@ -10,11 +10,13 @@ use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
+    #xem profile cua khach hang
     public function profile(){
         $user  = Auth::user();
         $NguoiDung = NguoiDung::find($user->MaNguoiDung);
         return view('user.profile',compact('user', 'NguoiDung'));
     }
+    #cap nhat profile
     public function updateProfile(Request $request){
         $request->validate([
             'ho_ten'=> 'required|string|max:255',
@@ -31,6 +33,7 @@ class UserController extends Controller
         ]);
         return redirect()->back()->with('success','cap nhat thanh cong');
     }
+    #thay doi mat khau
     public function changePassword(Request $request){
         $request->validate([
             'current_password'=>'required',

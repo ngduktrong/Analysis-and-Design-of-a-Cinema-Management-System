@@ -40,7 +40,7 @@ class Phim extends Model
     ];
 
    
-    public function suatChieus()
+    public function suatChieu()
     {
         return $this->hasMany(SuatChieu::class, 'MaPhim', 'MaPhim');
     }

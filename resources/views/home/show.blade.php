@@ -8,6 +8,15 @@
     <p><strong>Định dạng:</strong> {{ $phim->DinhDang }}</p>
     <p><strong>Đạo diễn:</strong> {{ $phim->DaoDien }}</p>
     <p><strong>Mô tả:</strong> {{ $phim->MoTa }}</p>
-
-    <a href="{{ route('home') }}">← Quay lại danh sách phim</a>
+    
+    @forelse($phim->suatChieu as $suat)
+        <p>
+            Suat chieu luc : {{$suat->NgayGioChieu}}
+            <a href="{{route('customer.ghe.index',['masuatchieu'=> $suat->MaSuatChieu])}}">Dat ve</a>
+        </p>
+   
+    @empty
+        <p><em>Phim chưa được chiếu</em></p>
+    @endforelse
+     <a href="{{ route('home') }}">← Quay lại danh sách phim</a>
 @endsection

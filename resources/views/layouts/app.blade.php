@@ -11,7 +11,7 @@
         <h1>Quản lý rạp chiếu phim</h1>
         <nav>
             <a href="{{route('phim.index')}}">Quản lý rạp chiếu phim</a>
-            <a href="{{route('phim.create')}}"></a>
+            <a href="{{route('phim.create')}}">edit</a>
         </nav>
     </header>
      <main>

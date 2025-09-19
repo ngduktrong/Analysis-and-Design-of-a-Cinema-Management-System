@@ -6,7 +6,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Phim;
 
-class HomeController extends Controller
+class CustomerHomeController extends Controller
 {
     public function show($id){
         $phim =  Phim::findOrFail($id);

@@ -1,32 +1,48 @@
 <?php
 
+use App\Http\Controllers\CustomerGheController;
 use App\Http\Controllers\HomeController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\PhimController;
+
 use App\Http\Controllers\VeController;
 use App\Http\Controllers\SChieuController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CustomerAuthController;
+use App\Http\Controllers\CustomerHomeController;
+use App\Http\Controllers\PhongChieuController;
+use App\Http\Controllers\CustomerVeController;
+use App\Http\Controllers\PhimController;
 
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::resource('phim',PhimController::class);
+
+
 
 Route::get('/login',function (){
     return view('auth.login');
-})->name('auth.loginForm');
-Route::post('/login',[AuthController::class,'login'])->name('auth.login');
+})->name('login');
+Route::post('/login',[CustomerAuthController::class,'login'])->name('auth.login');
 
 Route::get('/register',function(){
     return view('auth.register');
 })->name('auth.registerForm');
-Route::post('/register',[AuthController::class,'register'])->name('auth.register');
+Route::post('/register',[CustomerAuthController::class,'register'])->name('auth.register');
 
-Route::get('/home',[HomeController::class,'index'])->name('home');
-Route::get('/home/{id}',[HomeController::class,'show'])->name('home.show');
+Route::get('/home',[CustomerHomeController::class,'index'])->name('home');
+Route::get('/home/{id}',[CustomerHomeController::class,'show'])->name('home.show');
+//chon ghe
+Route::get('/chon-ghe/{masuatchieu}',[CustomerGheController::class,'index'])->name('customer.ghe.index');
+Route::middleware('auth')->group(function (){
+    
+    Route::post('/chon-ghe/{masuatchieu}',[CustomerGheController::class,'chonGhe'])->name('customer.ghe.chon');
+    //xac nhan ve
+    Route::get('/ve/confirm',[CustomerVeController::class,'confirm'])->name('ve.confirm');
+    //dat ve
+    Route::post('/ve/book',[CustomerVeController::class,'bookTicket'])->name('ve.book');
+});
+
 
 // Trang quản lý phim (hiển thị view AdminPhim.php)
 Route::get('/admin/phim', [PhimController::class, 'showAdminPage'])->name('admin.phim');

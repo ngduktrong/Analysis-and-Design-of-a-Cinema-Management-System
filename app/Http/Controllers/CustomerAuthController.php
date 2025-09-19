@@ -10,7 +10,7 @@ use App\Models\TaiKhoan;
 use App\Models\NhanVien;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
-class AuthController extends Controller
+class CustomerAuthController extends Controller
 {
     //dang nhap
     public function login(Request $request){
@@ -24,25 +24,18 @@ class AuthController extends Controller
             return back()->with('error','Sai tai khoan hoac mat khau !');
 
         }
-        // cung cap token 
-        // $token = $account->createToken('auth_token')->plainTextToken;
-        // return redirect()->route('home')->with([
-        //     'success'=>'Đăng nhập thành công',
-        //     'token'=> $token,
-        //     'user'=>$account-> nguoiDung
-
-        // ]);
+       
         Auth::login($account);
-        return redirect()->route('home')->with(['success'=>'Đăng nhập thành công']);
+        return redirect()->intended(route('home'))->with('success','Đăng nhập thành công');
         
     }
     //dang ky
     public function register(Request $request){
         $request->validate([
             'ho_ten'=>['required','string','max:255'],
-            'email'=> 'required|string|max:255|unique:NguoiDung,email',
+            'email'=> 'required|string|max:255|unique:nguoidung,Email',
             'mat_khau'=>'required|string|min:6',
-            'so_dien_thoai'=>'required|string|max:15|unique:NguoiDung,SoDienThoai',
+            'so_dien_thoai'=>'required|string|max:15|unique:nguoidung,SoDienThoai',
             
             'ten_dang_nhap'=>'required|string|max:50|unique:taikhoan,TenDangNhap'
         ]);
@@ -65,7 +58,7 @@ class AuthController extends Controller
              'MaNguoiDung'=>$user->MaNguoiDung,
              'DiemTichLuy'=>0,
             ]);
-        return redirect()->route('auth.loginForm')->with('success','Đăng ký thành công, vui lòng đăng nhập');
+        return redirect()->route('login')->with('success','Đăng ký thành công, vui lòng đăng nhập');
 
         
        
