@@ -12,7 +12,7 @@
     @forelse($phim->suatChieu as $suat)
         <p>
             Suat chieu luc : {{$suat->NgayGioChieu}}
-            <a href="{{route('customer.ghe.index',['masuatchieu'=> $suat->MaSuatChieu])}}">Dat ve</a>
+            <a href="{{route('suatchieu.phong',$phim->MaPhim)}}">Dat ve</a>
         </p>
    
     @empty

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CustomerGheController;
+use App\Http\Controllers\CustomerSChieuController;
 use App\Http\Controllers\HomeController;
 
 use App\Http\Controllers\VeController;
@@ -42,6 +43,9 @@ Route::middleware('auth')->group(function (){
     //dat ve
     Route::post('/ve/book',[CustomerVeController::class,'bookTicket'])->name('ve.book');
 });
+//schieu
+Route::get('/home/{id}/phong',[CustomerSChieuController::class,'chonPhong'])->name('suatchieu.phong');
+Route::get('/home/{id}/phong/{maPhong}/suatchieu',[CustomerSChieuController::class,'chonSuat'])->name('suatchieu.index');
 
 
 // Trang quản lý phim (hiển thị view AdminPhim.php)

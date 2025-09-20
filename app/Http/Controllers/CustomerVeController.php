@@ -47,7 +47,7 @@ class CustomerVeController extends Controller
 }
         $dsVe = [];
 
-        $hoaDon = $this->hoaDonService->createHoaDon($khachHang->MaKhachHang);
+        $hoaDon = $this->hoaDonService->createHoaDon($khachHang->MaNguoiDung);
 
         foreach($chonghe as $ghe){
             $ve = Ve::create([
