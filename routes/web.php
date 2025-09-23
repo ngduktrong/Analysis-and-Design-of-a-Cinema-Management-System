@@ -20,23 +20,26 @@ Route::get('/', function () {
 
 
 
-
+// trang dang nhap
 Route::get('/login',function (){
     return view('auth.login');
 })->name('login');
 Route::post('/login',[CustomerAuthController::class,'login'])->name('auth.login');
-
+// trang dang ky
 Route::get('/register',function(){
     return view('auth.register');
 })->name('auth.registerForm');
 Route::post('/register',[CustomerAuthController::class,'register'])->name('auth.register');
-
+//hien thi danh sach phim
 Route::get('/home',[CustomerHomeController::class,'index'])->name('home');
+//Trang phim da chon 
 Route::get('/home/{id}',[CustomerHomeController::class,'show'])->name('home.show');
 //chon ghe
-Route::get('/chon-ghe/{masuatchieu}',[CustomerGheController::class,'index'])->name('customer.ghe.index');
+
 Route::middleware('auth')->group(function (){
-    
+    Route::get('/home/{id}/phong',[CustomerSChieuController::class,'chonPhong'])->name('suatchieu.phong');
+    Route::get('/home/{id}/phong/{maPhong}/suatchieu',[CustomerSChieuController::class,'chonSuat'])->name('suatchieu.index');
+    Route::get('/chon-ghe/{masuatchieu}',[CustomerGheController::class,'index'])->name('customer.ghe.index');
     Route::post('/chon-ghe/{masuatchieu}',[CustomerGheController::class,'chonGhe'])->name('customer.ghe.chon');
     //xac nhan ve
     Route::get('/ve/confirm',[CustomerVeController::class,'confirm'])->name('ve.confirm');
@@ -44,8 +47,7 @@ Route::middleware('auth')->group(function (){
     Route::post('/ve/book',[CustomerVeController::class,'bookTicket'])->name('ve.book');
 });
 //schieu
-Route::get('/home/{id}/phong',[CustomerSChieuController::class,'chonPhong'])->name('suatchieu.phong');
-Route::get('/home/{id}/phong/{maPhong}/suatchieu',[CustomerSChieuController::class,'chonSuat'])->name('suatchieu.index');
+
 
 
 // Trang quản lý phim (hiển thị view AdminPhim.php)

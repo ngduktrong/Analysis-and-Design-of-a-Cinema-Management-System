@@ -18,7 +18,7 @@ class CustomerAuthController extends Controller
         'ten_dang_nhap' => 'required|string',
         'mat_khau' => 'required|string'
     ]);
-
+    
     if (Auth::guard('web')->attempt([
         'TenDangNhap' => $request->ten_dang_nhap,
         'password' => $request->mat_khau,
