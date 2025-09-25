@@ -44,6 +44,12 @@
             margin: 5px 10px;
             font-size: 20px;
         }
+        .head-controll{
+            position:fixed;
+            width: 100%;
+            box-shadow: rgb(48, 96, 163);
+
+        }
     </style>
 </head>
 
