@@ -3,9 +3,10 @@
 use App\Http\Controllers\CustomerGheController;
 use App\Http\Controllers\CustomerSChieuController;
 use App\Http\Controllers\HomeController;
+use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\VeController;
-use App\Http\Controllers\SChieuController;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CustomerAuthController;
 use App\Http\Controllers\CustomerHomeController;
@@ -24,6 +25,14 @@ Route::get('/', function () {
 Route::get('/login',function (){
     return view('auth.login');
 })->name('login');
+
+
+// Route logout
+Route::post('/logout', function () {
+    Auth::logout();
+    return redirect()->route('home');
+})->name('logout');
+
 Route::post('/login',[CustomerAuthController::class,'login'])->name('auth.login');
 // trang dang ky
 Route::get('/register',function(){
@@ -32,7 +41,7 @@ Route::get('/register',function(){
 Route::post('/register',[CustomerAuthController::class,'register'])->name('auth.register');
 //hien thi danh sach phim
 Route::get('/home',[CustomerHomeController::class,'index'])->name('home');
-//Trang phim da chon 
+//Trang phim da chon
 Route::get('/home/{id}',[CustomerHomeController::class,'show'])->name('home.show');
 //chon ghe
 

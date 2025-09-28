@@ -12,18 +12,19 @@
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 </head>
 <body>
-    
 
 
-     <main>
-        {{-- Nội dung riêng của từng view sẽ hiển thị ở đây --}}
-        @yield('content')
-    </main>
 
+    <div class="d-flex flex-column min-vh-100">
+  <main class="flex-grow-1">
+    {{-- nội dung cần hiển thị sẽ ở đây --}}
+    @yield('content')
+  </main>
+  <footer class="text-light text-center py-3">
+    <p>© 2025 Rạp phim Laravel</p>
+  </footer>
+</div>
 
-    <footer class=" text-light text-center py-3 mt-auto">
-        <p>© 2025 Rạp phim Laravel</p>
-    </footer>
 
 
 </body>
