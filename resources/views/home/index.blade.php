@@ -83,7 +83,57 @@
             color: aliceblue;
             margin-bottom: 60px;
         }
+        .nav-item{
+            padding: 0 10px;
+        }
+        .film-infor-detail{
+            text-align: left;
+            padding-left: 30px;
+
+        }
+        .film-infor-bookBtn{
+            display: flex;
+            justify-content: space-around;
+            align-content: center;
+        }
+        .love-icon{
+            display: flex;
+            align-items: center;
+            color: rgb(160, 160, 160);
+            cursor: pointer;
+            transition: color 0.3s ease;
+            font-size: 26px;
+            border-radius: 60px;
+
+
+        }
+        .love-icon:hover{
+                color: rgb(68, 67, 67);;
+            }
+        .love-icon.active{
+            color: red;
+        }
+        .btnbookTk{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            border-radius: 40px;
+            padding: 10px 20px;
+
+        }
+
     </style>
+    <script>
+        document.addEventListener('DOMContentLoaded',function(){
+            document.querySelectorAll('.love-icon').forEach(function(icon){
+                icon.addEventListener('click',function(){
+                    this.classList.toggle('active');
+                });
+            });
+        });
+
+    </script>
     {{-- thanh điều hướng --}}
     <div class="home-controll">
 
@@ -95,7 +145,10 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
-                        <li class="nav-item"><a class="nav-link" href="{{ route('home') }}">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('home') }}">
+                            <i class="fa-solid fa-house"></i>
+                            Home
+                        </a></li>
 
                         @guest
                             {{-- Khi chưa đăng nhập --}}
@@ -106,6 +159,7 @@
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                     data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fa-solid fa-user"></i>
                                     {{ Auth::user()->TenDangNhap }}
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
@@ -136,7 +190,7 @@
             <h2 class="show-film-status">Phim đang chiếu</h2>
             <ul class="showing-film-list">
                 @forelse($phimDangChieu as $phim)
-                    <li class="showing-film-item">
+                    <li class="showing-film-item ">
 
                         <a href="{{ route('home.show', $phim->MaPhim) }}">
                             <img src="/img/{{ $phim->DuongDanPoster }}" alt="" class="film-poster"
@@ -148,13 +202,15 @@
                                     Thời Lượng: {{ $phim->ThoiLuong }} <br>
                                     Quốc gia: {{ $phim->NuocSanXuat }}
                                 </div>
-                                <form action="{{route('suatchieu.phong',[$phim->MaPhim])}}" method="GET">
-                                <div class="film-infor-bookBtn">
-                                    <button >Đặt Vé</button>
-                                </div>
-                                </form>
+
                             </div>
                         </a>
+                           <form action="{{route('suatchieu.phong',[$phim->MaPhim])}}" method="GET">
+                                <div class="film-infor-bookBtn ">
+                                    <i class="fa-solid fa-heart love-icon   "></i>
+                                    <button class="btnbookTk btn-shadow " >Đặt Vé</button>
+                                </div>
+                                </form>
 
                     </li>
 

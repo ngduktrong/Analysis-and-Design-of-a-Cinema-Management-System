@@ -10,7 +10,7 @@
             background-position: center;
             background-repeat: no-repeat;
              height: min(1100px)
-            
+
         }
 
 
@@ -26,7 +26,7 @@
             font-weight: bold;
             display: flex;
             flex-direction: column;
-           
+
             justify-content: center;
             align-items: center;
             height: 85vh;
@@ -34,12 +34,7 @@
 
         }
 
-        .btn {
-            margin-top:20px;
-            width: 140px;
-            background-color: azure;
-            border-radius: 55px;
-        }
+
         .nav-item{
             margin: 5px 10px;
             font-size: 20px;
