@@ -1,65 +1,57 @@
-<<<<<<< HEAD
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+<h1>Hệ thống quản lý rạp chiếu phim </h1> 
+<h2>Giới Thiệu Dự Án </h2>
+Dự án này nhằm xây dựng một ứng dụng quản lý rạp chiếu phim, giúp tối ưu hóa quy trình vận hành và đặt vé thông qua việc sử dụng ngôn ngữ Java và thư viện Java SpringBoot. Ứng dụng cung cấp các chức năng thiết yếu như quản lý phim, lịch chiếu, phòng chiếu, đặt vé và khách hàng, hóa đơn , ghế ngồi  từ đó tạo ra một hệ thống trực quan, hiệu quả và dễ sử dụng cho cả nhân viên và người dùng.
+<h2>Mục Tiêu </h2>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
 
-## About Laravel
+1. Giao diện
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+    - Giao diện đồ họa bằng HTML + CSS + Thymleaf + Lavareal + PHP 
+      
+2. Chức năng chính
+   + Quản lý Phim : <br>
+     Thêm phim mới ( tên , thể loại , ngày công chiếu , mô tả , ... ) <br>
+     Cập nhập thông tin phim <br>
+     Xóa Phim<br>
+     Liệt kê phim<br>
+   + Quản lý Phòng Chiếu <br>
+       Thêm mới , sửa , xóa phòng chiếu và danh sách ghế .<br>
+   + Quản lý Suất  Chiếu <br>
+       Quản lý lịch chiếu cho từng phim theo thời gian và phòng<br>
+       Thêm suất: Chọn phim, phòng, thời gian<br>
+       Cập nhật: sửa thời gian, phòng<br>
+   + Quản lý Vé :  Xem trạng thái ghế đã đặt theo suất chiếu, cập nhật/trả vé. <br>
+       Tạo hóa đơn khi đặt vé gồm ngày giờ thanh toán , tổng tiền , ...<br>
+       Truy vấn danh sách Ve theo SuatChieu<br>
+       Hiển thị trạng thái:  paid, pending<br>
+       Cập nhật trạng thái vé (nếu có yêu cầu hủy/trả)<br>
+   + Quản lý Hóa Đơn  :Xem thông tin hóa đơn đã thanh toán<br>
+       Mối hóa đơn có dánh sách vé <br>
+         
+   + Quản lý Người Dùng : Đối tượng sử dụng
+       Khách hàng : Đăng ký , đặt vé , xem lịch chiếu .<br>
+       Nhân viên : Tạo Phim , Suất  Chiếu , Phòng chiếu <br>
+   
+<h2> Thành Viên Nhóm </h2>
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+<h2> Sơ đồ khối </h2>
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+<h3>UML Class Diagram</h3>
 
-## Learning Laravel
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+![Sơ đồ class ](https://github.com/ngduktrong/Group15_OOP_NO2_term3_2025/blob/main/img/image.png)
+<h3>UML Squence Diagram </h3>
+![Sơ đồ squence](https://github.com/ngduktrong/Group15_OOP_NO2_term3_2025/blob/main/img/Screenshot%202025-05-20%20120942.png?raw=true)
+<h3> UML Chức năng Đăng nhập </h3>
+![Sơ đồ login](https://github.com/ngduktrong/Group15_OOP_NO2_term3_2025/blob/main/img/ChucNanglogin.png?raw=true)
+<h3> UML Chúc năng Quản lý phim : Xem và Thêm </h3>
+![Sơ đồ view and create](https://github.com/ngduktrong/Group15_OOP_NO2_term3_2025/blob/main/img/Th%C3%AAm%20and%20Xem.png?raw=true)
+<h3>UML Chức năng quản lý phim : Xóa và Sửa </h3>
+![Sơ  đồ set and delete ](https://github.com/ngduktrong/Group15_OOP_NO2_term3_2025/blob/main/img/X%C3%B3a%20and%20s%E1%BB%ADa.png?raw=true)
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+<h3>Chuc năng chính : Thông báo vé đến giờ chiều của khách hàng </h3>
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
 
-## Laravel Sponsors
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
 
-### Premium Partners
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-=======
-Analysis and Design of a Cinema Management System
->>>>>>> 30d1deb7970b50a71826a32c9cb381e1511642e2
