@@ -16,6 +16,7 @@ use App\Http\Controllers\KhachHangController;
 use App\Http\Controllers\NhanVienController;
 use App\Http\Controllers\VeController;
 use App\Http\Controllers\HoaDonController;
+use App\Http\Controllers\KiemTraVeSapChieuController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -156,6 +157,13 @@ Route::prefix('admin')->group(function () {
     Route::delete('/nhanvien/{id}', [NhanVienController::class, 'destroy'])->name('admin.nhanvien.destroy');
     Route::get('/nhanvien/nguoidung-chua-co', [NhanVienController::class, 'getNguoiDungChuaCoTaiKhoan'])
          ->name('admin.nhanvien.nguoidung_chua_co');
+});
+Route::prefix('admin')->group(function () {
+    
+    
+    Route::get('/kiem-tra-ve-sap-chieu', [KiemTraVeSapChieuController::class, 'index'])->name('admin.kiemtra.index');
+    Route::get('/kiem-tra-ve-sap-chieu/danh-sach', [KiemTraVeSapChieuController::class, 'danhSachVeSapChieu'])->name('admin.kiemtra.danhsach');
+    Route::get('/kiem-tra-ve-sap-chieu/thong-bao', [KiemTraVeSapChieuController::class, 'thongBaoVeSapChieu'])->name('admin.kiemtra.thongbao');
 });
 
 // Route test database (giữ nguyên cho debug)
