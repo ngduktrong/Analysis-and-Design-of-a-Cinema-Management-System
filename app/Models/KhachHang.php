@@ -2,43 +2,39 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class KhachHang extends Model
 {
-    protected $table = 'khachhang';
+    use HasFactory;
+
+    protected $table = 'KhachHang';
     protected $primaryKey = 'MaNguoiDung';
-    public $incrementing = false; 
     public $timestamps = false;
 
+    // Khóa chính không auto-increment (vì lấy từ bảng NguoiDung)
+    public $incrementing = false;
+    protected $keyType = 'int';
+
     protected $fillable = [
-        'MaNguoiDung',
+        // 'MaNguoiDung', // cân nhắc bỏ để tránh mass-assignment của PK
         'DiemTichLuy',
     ];
 
-   
+    protected $casts = [
+        'DiemTichLuy' => 'integer',
+    ];
+
+    // Quan hệ: KhachHang thuộc về 1 NguoiDung
     public function nguoiDung()
     {
         return $this->belongsTo(NguoiDung::class, 'MaNguoiDung', 'MaNguoiDung');
     }
 
-   
-    public function getDiemTichLuyAttribute($value)
+    // KhachHang có nhiều HoaDon
+    public function hoaDon()
     {
-        return $value ?? 0;
-    }
-
-   
-    public function congDiem($soDiem)
-    {
-        $this->DiemTichLuy += $soDiem;
-        $this->save();
-    }
-
-   
-    public function truDiem($soDiem)
-    {
-        $this->DiemTichLuy = max(0, $this->DiemTichLuy - $soDiem);
-        $this->save();
+        return $this->hasMany(HoaDon::class, 'MaKhachHang', 'MaNguoiDung');
     }
 }

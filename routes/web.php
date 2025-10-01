@@ -60,7 +60,7 @@ Route::middleware('auth')->group(function (){
 
 
 // Trang quản lý phim (hiển thị view AdminPhim.php)
-Route::get('/admin/phim', [PhimController::class, 'index'])->name('admin.phim');
+Route::get('/admin/phim', [PhimController::class, 'showAdminPage'])->name('admin.phim');
 
 // CRUD phim (tận dụng BaseCrudController)
 Route::resource('phim', PhimController::class);

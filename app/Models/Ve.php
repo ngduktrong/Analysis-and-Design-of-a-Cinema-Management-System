@@ -1,14 +1,19 @@
 <?php
+// app/Models/Ve.php
 
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Ve extends Model
 {
-    protected $table = 've';            
-    protected $primaryKey = 'MaVe';    
-    public $timestamps = false;          
+    protected $table = 'Ve';
+    protected $primaryKey = 'MaVe';
+    public $incrementing = true;
+    protected $keyType = 'int';
+
+    public $timestamps = false;
 
     protected $fillable = [
         'MaSuatChieu',
@@ -18,37 +23,67 @@ class Ve extends Model
         'GiaVe',
         'TrangThai',
         'NgayDat',
-        'NgayGioChieu'
     ];
 
-    
+    protected $casts = [
+        'MaSuatChieu' => 'integer',
+        'MaPhong' => 'integer',
+        'MaHoaDon' => 'integer',
+        'GiaVe' => 'decimal:2',
+        'NgayDat' => 'datetime',
+    ];
 
-    public function suatChieu()
-    {
-        return $this->belongsTo(SuatChieu::class, 'MaSuatChieu', 'MaSuatChieu');
-    }
-
-    
-    public function phongChieu()
-    {
-        return $this->belongsTo(PhongChieu::class, 'MaPhong', 'MaPhong');
-    }
-
-    
-    public function hoaDon()
+    /**
+     * Hóa đơn (nullable)
+     */
+    public function hoaDon(): BelongsTo
     {
         return $this->belongsTo(HoaDon::class, 'MaHoaDon', 'MaHoaDon');
     }
 
-   
-    public function getNgayGioChieuFormattedAttribute()
+    /**
+     * Suất chiếu
+     */
+    public function suatChieu(): BelongsTo
     {
-        if (!$this->NgayGioChieu) return '';
-        return \Carbon\Carbon::parse($this->NgayGioChieu)->format('d-m-Y H:i');
+        return $this->belongsTo(SuatChieu::class, 'MaSuatChieu', 'MaSuatChieu');
     }
 
-    public function getGiaVeAttribute($value)
+    /**
+     * Phòng chiếu
+     */
+    public function phongChieu(): BelongsTo
     {
-    return $value ?? 50000; 
+        return $this->belongsTo(PhongChieu::class, 'MaPhong', 'MaPhong');
+    }
+
+    /**
+     * Lưu ý: bảng Ghe có khóa composite (MaPhong, SoGhe).
+     * Eloquent không hỗ trợ relationship với composite PK trực tiếp,
+     * nên cung cấp helper để lấy đối tượng Ghe tương ứng.
+     *
+     * Trả về instance Ghe hoặc null.
+     */
+    public function ghe()
+    {
+        return Ghe::where('MaPhong', $this->MaPhong)
+                  ->where('SoGhe', $this->SoGhe)
+                  ->first();
+    }
+
+    /**
+     * Scope tiện lợi: theo trạng thái
+     */
+    public function scopeOfStatus($query, $status)
+    {
+        return $query->where('TrangThai', $status);
+    }
+
+    /**
+     * Scope: vé của một suất chiếu
+     */
+    public function scopeForSuatChieu($query, $maSuatChieu)
+    {
+        return $query->where('MaSuatChieu', $maSuatChieu);
     }
 }

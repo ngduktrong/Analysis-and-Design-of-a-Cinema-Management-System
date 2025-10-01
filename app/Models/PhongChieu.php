@@ -36,7 +36,7 @@ class PhongChieu extends Model
     /**
      * Mối quan hệ với bảng SuatChieu
      */
-    public function suatChieu()
+    public function suatChieus()
     {
         return $this->hasMany(SuatChieu::class, 'MaPhong', 'MaPhong');
     }

@@ -3,57 +3,35 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class NhanVien extends NguoiDung
+class NhanVien extends Model
 {
-    protected $table = 'nhanvien';
+    // Bảng NhanVien dùng MaNguoiDung làm khóa chính (foreign key đến NguoiDung)
+    protected $table = 'NhanVien';
     protected $primaryKey = 'MaNguoiDung';
-    public $incrementing = false; 
+    public $incrementing = false; // nếu MaNguoiDung không tự tăng
+    protected $keyType = 'int'; // đổi sang 'string' nếu mã là chuỗi
     public $timestamps = false;
 
+    // Cho phép gán hàng loạt cho các trường này
     protected $fillable = [
         'MaNguoiDung',
-        'VaiTro',
         'ChucVu',
         'Luong',
+        'VaiTro'
     ];
 
-   
-    const VAITRO_ADMIN   = 'Admin';
-    const VAITRO_QUANLY  = 'QuanLy';
-    const VAITRO_THUNGAN = 'ThuNgan';
-    const VAITRO_BANVE   = 'BanVe';
+    protected $casts = [
+        'Luong' => 'float',
+        'MaNguoiDung' => 'int',
+    ];
 
-  
-    public function nguoiDung()
+    /**
+     * Quan hệ tới bảng NguoiDung
+     */
+    public function nguoiDung(): BelongsTo
     {
         return $this->belongsTo(NguoiDung::class, 'MaNguoiDung', 'MaNguoiDung');
     }
-
-   
-    public function getVaiTroAttribute($value)
-    {
-        return ucfirst($value);
-    }
-
-    
-    public function setVaiTroAttribute($value)
-    {
-        $roles = [
-            self::VAITRO_ADMIN,
-            self::VAITRO_QUANLY,
-            self::VAITRO_THUNGAN,
-            self::VAITRO_BANVE
-        ];
-        $this->attributes['VaiTro'] = in_array($value, $roles) ? $value : self::VAITRO_BANVE;
-    }
-
- 
-
-    
-    public function getLuongFormattedAttribute()
-    {
-        return number_format($this->Luong, 0, ',', '.') . ' VND';
-    }
-
 }
