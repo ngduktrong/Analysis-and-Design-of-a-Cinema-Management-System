@@ -45,6 +45,13 @@
             box-shadow: rgb(48, 96, 163);
 
         }
+        .btn{
+            padding: 10px 20px;
+            background-color: rgb(255, 255, 255);
+            color: black;
+            border-radius: 50px;
+            margin-top: 20px;
+        }
     </style>
 </head>
 

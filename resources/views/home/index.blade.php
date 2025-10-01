@@ -69,6 +69,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            margin-top: 50px;
 
         }
 
@@ -83,9 +84,9 @@
             color: aliceblue;
             margin-bottom: 60px;
         }
-        .nav-item{
+        /* .nav-item{
             padding: 0 10px;
-        }
+        } */
         .film-infor-detail{
             text-align: left;
             padding-left: 30px;
@@ -135,53 +136,7 @@
 
     </script>
     {{-- thanh điều hướng --}}
-    <div class="home-controll">
-
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="#">Cinema System</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ms-auto">
-                        <li class="nav-item"><a class="nav-link" href="{{ route('home') }}">
-                            <i class="fa-solid fa-house"></i>
-                            Home
-                        </a></li>
-
-                        @guest
-                            {{-- Khi chưa đăng nhập --}}
-                            <li class="nav-item"><a class="nav-link" href="{{ route('auth.login') }}">Đăng Nhập</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ route('auth.register') }}">Đăng ký</a></li>
-                        @else
-                            {{-- Khi đã đăng nhập --}}
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
-                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fa-solid fa-user"></i>
-                                    {{ Auth::user()->TenDangNhap }}
-                                </a>
-                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                    <li><a class="dropdown-item" href="#">Thông tin cá nhân</a></li>
-                                    <li>
-                                        <form method="POST" action="{{ route('logout') }}">
-                                            @csrf
-                                            <button type="submit" class="dropdown-item">Đăng xuất</button>
-                                        </form>
-                                    </li>
-                                </ul>
-                            </li>
-                        @endguest
-
-                        <li class="nav-item"><a class="nav-link" href="#">Introduce Author</a></li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-
-
-    </div>
+   @include('layouts.nav')
     {{-- nội dung hiện thị chính --}}
     <div class="content-home">
         <div class="showing-film">
@@ -205,7 +160,7 @@
 
                             </div>
                         </a>
-                           <form action="{{route('suatchieu.phong',[$phim->MaPhim])}}" method="GET">
+                           <form action="{{route('home.show',[$phim->MaPhim])}}" method="GET">
                                 <div class="film-infor-bookBtn ">
                                     <i class="fa-solid fa-heart love-icon   "></i>
                                     <button class="btnbookTk btn-shadow " >Đặt Vé</button>

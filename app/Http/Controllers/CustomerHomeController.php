@@ -8,10 +8,31 @@ use App\Models\Phim;
 
 class CustomerHomeController extends Controller
 {
-    public function show($id){
-        $phim =  Phim::findOrFail($id);
-        return view('home.show',compact('phim'));
+    // public function show($id){
+    //     $phim =  Phim::findOrFail($id);
+    //     return view('home.show',compact('phim'));
+    // }
+    public function show($id, Request $request)
+{
+    $phim = Phim::with('suatChieu.phong')->findOrFail($id);
+
+    // lấy danh sách ngày chiếu distinct
+    $ngayChieu = $phim->suatChieu()
+                      ->selectRaw('DATE(NgayGioChieu) as ngay')
+                      ->distinct()
+                      ->pluck('ngay');
+
+    $suatTheoNgay = [];
+    if ($request->has('ngay')) {
+        $suatTheoNgay = $phim->suatChieu()
+                             ->with('phong')
+                             ->whereDate('NgayGioChieu', $request->ngay)
+                             ->get();
     }
+
+    return view('home.show', compact('phim', 'ngayChieu', 'suatTheoNgay'));
+}
+
     public function index(){
         $today = now()->toDateString();
 
