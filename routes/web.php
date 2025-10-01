@@ -18,8 +18,12 @@ use App\Http\Controllers\VeController;
 use App\Http\Controllers\HoaDonController;
 
 Route::get('/', function () {
-    return redirect()->route('login');
+    return view('welcome');
 });
+Route::get('/home', function () {
+    return view('welcome');
+})->name('home');
+
 
 // Route đăng nhập/đăng ký
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
