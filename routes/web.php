@@ -17,13 +17,37 @@ use App\Http\Controllers\NhanVienController;
 use App\Http\Controllers\VeController;
 use App\Http\Controllers\HoaDonController;
 use App\Http\Controllers\KiemTraVeSapChieuController;
+use App\Http\Controllers\CustomerHomeController;
+use App\Http\Controllers\CustomerSChieuController;
+use App\Http\Controllers\CustomerGheController;
+use App\Http\Controllers\CustomerVeController;
 
 Route::get('/', function () {
     return view('welcome');
 });
-Route::get('/home', function () {
-    return view('welcome');
-})->name('home');
+//=========================   Route USER =========================
+// Trang danh sách phim / chi tiết phim - KHÔNG cần login
+Route::get('/home', [CustomerHomeController::class, 'index'])->name('home');
+Route::get('/home/{id}', [CustomerHomeController::class, 'show'])->name('home.show');
+
+// Các route đặt vé (chọn phòng, chọn suất, chọn ghế, xác nhận vé) -> cần login
+Route::middleware(['auth'])->group(function () {
+    Route::get('/home/{id}/phong', [CustomerSChieuController::class, 'chonPhong'])->name('suatchieu.phong');
+    Route::get('/home/{id}/phong/{maPhong}/suatchieu', [CustomerSChieuController::class, 'chonSuat'])->name('suatchieu.index');
+
+    Route::get('/chon-ghe/{masuatchieu}', [CustomerGheController::class, 'index'])->name('customer.ghe.index');
+    Route::post('/chon-ghe/{masuatchieu}', [CustomerGheController::class, 'chonGhe'])->name('customer.ghe.chon');
+
+   
+    Route::get('/ve/confirm', [CustomerVeController::class, 'confirm'])->name('ve.confirm');
+    Route::post('/ve/book', [CustomerVeController::class, 'bookTicket'])->name('ve.book');
+    // web.php
+    Route::get('/ve/{maHoaDon}', [CustomerVeController::class, 'show'])->name('ve.detail');
+
+
+
+});
+
 
 
 // Route đăng nhập/đăng ký
