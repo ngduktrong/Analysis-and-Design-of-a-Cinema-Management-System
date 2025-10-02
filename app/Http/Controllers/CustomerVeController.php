@@ -3,69 +3,85 @@
 namespace App\Http\Controllers;
 
 use App\Models\HoaDon;
-use App\Models\KhachHang;
-use Illuminate\Http\Request;
-use App\Models\Phim;
 use App\Models\Ve;
 use App\Models\SuatChieu;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use App\Service\HoaDonService;
-
 
 class CustomerVeController extends Controller
 {
-   
-    protected $hoaDonService;
-    public function __construct(HoaDonService $hoaDonService){
-        $this->hoaDonService = $hoaDonService;
+    // Hiển thị trang xác nhận vé
+    public function confirm()
+    {
+        $maSuatChieu = session('ma_suat_chieu');
+        $chonVePending = session('chon_ve_pending', []);
+
+        if (!$maSuatChieu || empty($chonVePending)) {
+            return redirect()->route('home')->with('error', 'Bạn chưa chọn ghế.');
+        }
+
+        $suatchieu = SuatChieu::with('phim','phongChieu')->findOrFail($maSuatChieu);
+
+        $dsVe = Ve::whereIn('MaVe', $chonVePending)->get();
+        $chonGhe = $dsVe->pluck('SoGhe')->toArray();
+
+        return view('VeConfirm', compact('suatchieu','dsVe','chonGhe'));
     }
-    public function confirm(){
-            $masuatchieu = session('ma_suat_chieu');
-            $chonghe = session('chon_ghe',[]);
-            if(!$masuatchieu || empty($chonghe)){
-                return redirect()->back()->with('error','bạn chưa chọn ghế');
 
+    // Xác nhận đặt vé
+    public function bookTicket(Request $request)
+    {
+        $maSuatChieu = session('ma_suat_chieu');
+        $chonVePending = session('chon_ve_pending', []);
+
+        if (!$maSuatChieu || empty($chonVePending)) {
+            return redirect()->route('home')->with('error', 'Bạn chưa chọn ghế.');
+        }
+
+        DB::beginTransaction();
+        try {
+            $dsVe = Ve::whereIn('MaVe', $chonVePending)
+                       ->where('TrangThai','pending')
+                       ->get();
+
+            if($dsVe->isEmpty()){
+                DB::rollBack();
+                return redirect()->route('home')->with('error','Vé pending không tồn tại.');
             }
-            $suatchieu = SuatChieu::with('phong','phim')->findOrFail($masuatchieu);
-            return view('VeConfirm',compact('suatchieu','chonghe'));
-        }
-
-    public function bookTicket(Request $request){
-        $masuatchieu = session('ma_suat_chieu');
-        $chonghe = session('chon_ghe',[]);
-
-        if(!$masuatchieu || empty($chonghe)){
-            return redirect()->route('home')->with('error','ban chua chon ghe');
-        }
-        
-        $maNguoiDung = Auth::user()->MaNguoiDung;
-
-        //lay ma khach hang tuong ung
-        $khachHang = KhachHang::where('MaNguoiDung',$maNguoiDung)->first();
-        if (!$khachHang) {
-            return redirect()->route('home')->with('error', 'Không tìm thấy khách hàng.');
-}
-        $dsVe = [];
-
-        $hoaDon = $this->hoaDonService->createHoaDon($khachHang->MaNguoiDung);
-
-        foreach($chonghe as $ghe){
-            $ve = Ve::create([
-                'MaSuatChieu'=>$masuatchieu,
-                'MaPhong'=>Suatchieu::findOrFail($masuatchieu)->MaPhong,
-                'SoGhe'=> $ghe,
-                'GiaVe'=>50000,
-                'MaHoaDon'=>$hoaDon->MaHoaDon,
-                'TrangThai'=>'Đã đặt',
-                'NgayDat'=> now(),
-
+            $user = Auth::user();
+            // Tạo Hóa đơn mới
+            $tongTien = $dsVe->count() * 50000;
+            $hoaDon = HoaDon::create([
+                'MaKhachHang' =>$user->MaNguoiDung,
+                'TongTien' => $tongTien,
+                'NgayLap' => now(),
             ]);
 
-            $dsVe[] = $ve;
-        }
-        $hoaDon->update(['TongTien'=>count($dsVe)*50000]);
-        session()->forget(['ma_suat_chieu','chon_ghe']);
-        return redirect()->route('home')->with('success', 'Đặt thành công');
+            // Cập nhật vé
+            foreach($dsVe as $ve){
+                $ve->update([
+                    'MaHoaDon' => $hoaDon->MaHoaDon,
+                    'TrangThai' => 'paid',
+                ]);
+            }
 
+            DB::commit();
+
+            session()->forget(['ma_suat_chieu','chon_ve_pending']);
+
+            return redirect()->route('ve.detail',$hoaDon->MaHoaDon)
+                             ->with('success','Đặt vé thành công!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->route('ve.confirm')->with('error','Có lỗi xảy ra: '.$e->getMessage());
         }
+    }
+
+    // Chi tiết vé
+    public function show($maHoaDon)
+    {
+        $hoaDon = HoaDon::with(['ves.suatChieu.phim','ves.suatChieu.phongChieu'])->findOrFail($maHoaDon);
+        return view('VeDetail', compact('hoaDon'));
+    }
 }

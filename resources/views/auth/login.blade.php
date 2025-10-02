@@ -11,7 +11,7 @@
             {{ session('success') }}
         </div>
         @endif
-    <form method="POST" action="{{route('auth.login')}}">
+    <form method="POST" action="{{route('login')}}">
         @csrf
         <div>
             <label for="ten_dang_nhap">
@@ -33,6 +33,6 @@
         <button type="submit">Dang nhap</button>
     </form>
     <p>
-        Chua co tai khoan? <a href="{{ route('auth.register') }}">Dang ky</a>
+        Chua co tai khoan? <a href="{{ route('register') }}">Dang ky</a>
     </p>
 @endsection

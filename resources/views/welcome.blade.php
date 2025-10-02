@@ -66,8 +66,8 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item"><a class="nav-link" href="{{ route('home') }}">Home</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ route('auth.login') }}">Đăng Nhập</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ route('auth.register') }}">Đăng ký</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('login') }}">Đăng Nhập</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('register') }}">Đăng ký</a></li>
                         <li class="nav-item"><a class="nav-link" href="#">Introduce Author</a></li>
                     </ul>
                 </div>

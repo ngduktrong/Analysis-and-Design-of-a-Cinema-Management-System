@@ -21,7 +21,7 @@ class CustomerSChieuController extends Controller
     public function chonSuat($id,$maPhong){
         $phim = Phim::findOrFail($id);
         $phong   = PhongChieu::findOrFail($maPhong);
-        $suatchieu = SuatChieu::where('Maphim',$id)->where('MaPhong',$maPhong)->get();
+        $suatchieu = SuatChieu::where('MaPhim',$id)->where('MaPhong',$maPhong)->get();
         return view('suatchieu.chonsuat', compact('phim', 'phong', 'suatchieu'));
     }
 }

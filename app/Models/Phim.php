@@ -9,38 +9,26 @@ class Phim extends Model
 {
     use HasFactory;
 
-    
     protected $table = 'Phim';
-
-    
     protected $primaryKey = 'MaPhim';
-
-    
-    public $incrementing = true;
-    protected $keyType = 'int';
-
-    
     public $timestamps = false;
 
-    
     protected $fillable = [
         'TenPhim',
+        'MoTa',
+        'TheLoai',
         'ThoiLuong',
         'NgayKhoiChieu',
+        'DuongDanPoster',
         'NuocSanXuat',
         'DinhDang',
-        'MoTa',
         'DaoDien',
-        'DuongDanPoster'
     ];
 
-    protected $casts = [
-        'NgayKhoiChieu' => 'date',
-        'ThoiLuong' => 'integer'
-    ];
-
-   
-    public function suatChieus()
+    /**
+     * Quan hệ: 1 phim có nhiều suất chiếu
+     */
+    public function suatChieu()
     {
         return $this->hasMany(SuatChieu::class, 'MaPhim', 'MaPhim');
     }

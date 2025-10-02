@@ -7,7 +7,7 @@
     @if(session('success'))
         <div style='color: green;'>{{session('success')}}</div>
     @endif
-    <form method="POST" action="{{route('auth.register')}}">
+    <form method="POST" action="{{route('register')}}">
         @csrf
             <div>
                 <label for="ho_ten">Ho Ten:</label>

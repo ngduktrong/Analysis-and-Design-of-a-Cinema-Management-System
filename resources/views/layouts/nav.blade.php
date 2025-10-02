@@ -32,8 +32,8 @@
 
                         @guest
                             {{-- Khi chưa đăng nhập --}}
-                            <li class="nav-item"><a class="nav-link" href="{{ route('auth.login') }}">Đăng Nhập</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ route('auth.register') }}">Đăng ký</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ route('login') }}">Đăng Nhập</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ route('register') }}">Đăng ký</a></li>
                         @else
                             {{-- Khi đã đăng nhập --}}
                             <li class="nav-item dropdown">

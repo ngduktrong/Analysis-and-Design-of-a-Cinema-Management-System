@@ -159,20 +159,21 @@
             {{-- Danh sách suất chiếu theo ngày --}}
             @if (!empty($suatTheoNgay) && count($suatTheoNgay) > 0)
                 <div class="time-slots">
-                    @foreach ($suatTheoNgay as $suat)
-                        <button class="time-slot">
-                            @auth
-                                <a href="{{ route('suatchieu.phong', [$phim->MaPhim]) }}">
-                                    {{ \Carbon\Carbon::parse($suat->NgayGioChieu)->format('H:i') }}
-                                </a>
-                            @else
-                                <a href="{{ route('login') }}">
-                                    {{ \Carbon\Carbon::parse($suat->NgayGioChieu)->format('H:i') }}
-                                </a>
-                            @endauth
-                        </button>
-                    @endforeach
-                </div>
+@foreach ($suatTheoNgay as $suat)
+    <button class="time-slot">
+        @auth
+            <a href="{{ route('suatchieu.phong', ['id' => $phim->MaPhim, 'maPhong' => $suat->MaPhong]) }}">
+                {{ \Carbon\Carbon::parse($suat->NgayGioChieu)->format('H:i') }}
+            </a>
+        @else
+            <a href="{{ route('login') }}">
+                {{ \Carbon\Carbon::parse($suat->NgayGioChieu)->format('H:i') }}
+            </a>
+        @endauth
+    </button>
+@endforeach
+</div>
+
             @elseif(request('ngay'))
                 <p><em>Không có suất chiếu cho ngày này.</em></p>
             @endif

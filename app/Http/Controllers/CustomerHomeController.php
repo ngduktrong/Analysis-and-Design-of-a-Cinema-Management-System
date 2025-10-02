@@ -14,7 +14,7 @@ class CustomerHomeController extends Controller
     // }
     public function show($id, Request $request)
 {
-    $phim = Phim::with('suatChieu.phong')->findOrFail($id);
+    $phim = Phim::with('suatChieu.phongChieu')->findOrFail($id);
 
     // lấy danh sách ngày chiếu distinct
     $ngayChieu = $phim->suatChieu()
@@ -25,7 +25,7 @@ class CustomerHomeController extends Controller
     $suatTheoNgay = [];
     if ($request->has('ngay')) {
         $suatTheoNgay = $phim->suatChieu()
-                             ->with('phong')
+                             ->with('phongChieu')
                              ->whereDate('NgayGioChieu', $request->ngay)
                              ->get();
     }
