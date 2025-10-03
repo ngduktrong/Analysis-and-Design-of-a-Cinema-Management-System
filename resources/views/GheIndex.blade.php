@@ -9,7 +9,7 @@
             <div style="color: red;">{{ session('error') }}</div>
         @endif
 
-        <form method="POST" action="{{ route('customer.ghe.chon', $suatchieu->MaSuatChieu) }}">
+        <form id="chon-ghe-form" method="POST" action="{{ route('customer.ghe.chon', $suatchieu->MaSuatChieu) }}">
             @csrf
             <div id="ghe-container" style="margin-bottom: 20px;">
                 <p class="screen">Screen</p>
@@ -25,13 +25,13 @@
 
                 @foreach ($groupedGhe as $row => $ghes)
                     <div style="margin-bottom: 5px;">
-                        @foreach ($ghes as $soGhe)
+                        @foreach ($ghes as $soLuongGhe)
                             @php
-                                $isBooked = in_array($soGhe, $vedat);
+                                $isBooked = in_array($soLuongGhe, $vedat);
                             @endphp
                             <button type="button" class="ghe-btn {{ $isBooked ? 'booked' : '' }}"
-                                data-ghe="{{ $soGhe }}" {{ $isBooked ? 'disabled' : '' }}>
-                                {{ $soGhe }}
+                                data-ghe="{{ $soLuongGhe }}" {{ $isBooked ? 'disabled' : '' }}>
+                                {{ $soLuongGhe }}
                             </button>
                         @endforeach
                     </div>
@@ -55,7 +55,7 @@
                 border-radius: 25px;
                 cursor: pointer;
                 font-size: 16px;
-                text-align: center;
+                ;
 
             }
             .note-ghe {
@@ -186,42 +186,44 @@
         </style>
 
         <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const buttons = document.querySelectorAll('.ghe-btn');
-                let selectedGhe = [];
+document.addEventListener('DOMContentLoaded', function () {
+    const buttons = document.querySelectorAll('.ghe-btn');
+    const form = document.getElementById('chon-ghe-form');
+    let selectedGhe = [];
 
-                buttons.forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const ghe = this.dataset.ghe;
-                        if (this.classList.contains('selected')) {
-                            this.classList.remove('selected');
-                            selectedGhe = selectedGhe.filter(g => g !== ghe);
-                        } else {
-                            this.classList.add('selected');
-                            selectedGhe.push(ghe);
-                        }
-                    });
-                });
+    buttons.forEach(btn => {
+        btn.addEventListener('click', function () {
+            const ghe = this.dataset.ghe;
+            if (this.classList.contains('selected')) {
+                this.classList.remove('selected');
+                selectedGhe = selectedGhe.filter(g => g !== ghe);
+            } else {
+                this.classList.add('selected');
+                selectedGhe.push(ghe);
+            }
+            console.log("Ghế đang chọn:", selectedGhe);
+        });
+    });
 
-                document.querySelector('form').addEventListener('submit', function(e) {
-                    const form = e.target;
-                    // Xóa input cũ
-                    const oldInputs = form.querySelectorAll('input[name="chon_ghe[]"]');
-                    oldInputs.forEach(i => i.remove());
-                    // Tạo input mới cho từng ghế
-                    selectedGhe.forEach(ghe => {
-                        const input = document.createElement('input');
-                        input.type = 'hidden';
-                        input.name = 'chon_ghe[]';
-                        input.value = ghe;
-                        form.appendChild(input);
-                    });
-                    if (selectedGhe.length === 0) {
-                        e.preventDefault();
-                        alert('Bạn chưa chọn ghế!');
-                    }
-                });
-            });
-        </script>
+    form.addEventListener('submit', function (e) {
+        // Xóa input cũ
+        form.querySelectorAll('input[name="chon_ghe[]"]').forEach(i => i.remove());
+
+        // Tạo input mới cho từng ghế
+        selectedGhe.forEach(ghe => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'chon_ghe[]';
+            input.value = ghe;
+            form.appendChild(input);
+        });
+
+        if (selectedGhe.length === 0) {
+            e.preventDefault();
+            alert('Bạn chưa chọn ghế!');
+        }
+    });
+});
+</script>
     </div>
 @endsection

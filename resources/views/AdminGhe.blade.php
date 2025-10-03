@@ -61,8 +61,8 @@
                 </div>
                 
                 <div class="col-md-4">
-                    <label for="SoGhe" class="form-label">Số Ghế</label>
-                    <input type="text" class="form-control" name="SoGhe" value="{{ $editingGhe ? $editingGhe->SoGhe : old('SoGhe') }}" required>
+                    <label for="SoLuongGhe" class="form-label">Số Ghế</label>
+                    <input type="text" class="form-control" name="SoLuongGhe" value="{{ $editingGhe ? $editingGhe->SoGhe : old('SoGhe') }}" required>
                 </div>
                 
                 <div class="col-md-4 d-flex align-items-end">

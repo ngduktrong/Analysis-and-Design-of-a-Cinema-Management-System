@@ -63,7 +63,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/dashboard', function () {
         return view('AdminDashBoard');
     })->name('admin.dashboard');
-});
+
 
 // Trang quản lý phim (hiển thị view AdminPhim.php)
 Route::get('/admin/phim', [PhimController::class, 'showAdminPage'])->name('admin.phim');
@@ -188,6 +188,7 @@ Route::prefix('admin')->group(function () {
     Route::get('/kiem-tra-ve-sap-chieu', [KiemTraVeSapChieuController::class, 'index'])->name('admin.kiemtra.index');
     Route::get('/kiem-tra-ve-sap-chieu/danh-sach', [KiemTraVeSapChieuController::class, 'danhSachVeSapChieu'])->name('admin.kiemtra.danhsach');
     Route::get('/kiem-tra-ve-sap-chieu/thong-bao', [KiemTraVeSapChieuController::class, 'thongBaoVeSapChieu'])->name('admin.kiemtra.thongbao');
+});
 });
 
 // Route test database (giữ nguyên cho debug)
