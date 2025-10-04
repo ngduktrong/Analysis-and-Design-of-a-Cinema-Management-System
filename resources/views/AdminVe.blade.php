@@ -20,6 +20,34 @@
             font-size: 0.875em;
             margin-top: 0.25rem;
         }
+        .alert {
+    border-radius: 8px;
+    margin: 15px 0;
+}
+
+.alert-success {
+    background-color: #d1e7dd;
+    border-color: #badbcc;
+    color: #0f5132;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    border-color: #f5c2c7;
+    color: #842029;
+}
+
+.alert-info {
+    background-color: #cff4fc;
+    border-color: #b6effb;
+    color: #055160;
+}
+
+.alert-warning {
+    background-color: #fff3cd;
+    border-color: #ffecb5;
+    color: #664d03;
+}
     </style>
 </head>
 <body>
@@ -32,6 +60,8 @@
         <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary">
             <i class="fas fa-arrow-left"></i> Quay lại Dashboard
         </a>
+        <a href="{{ url('/admin/ve') }}" class="btn btn-primary">nút reset trang vé</a>
+        <div id="alertContainer"></div>
 
         <!-- Form thêm vé -->
         <div class="row mt-4">
@@ -94,16 +124,7 @@
                             </div>
                         </div>
 
-                        <!-- Tìm kiếm theo mã khách hàng -->
-                        <div class="mb-3">
-                            <label class="form-label">Tìm theo mã khách hàng</label>
-                            <div class="input-group">
-                                <input type="number" class="form-control" id="searchMaKH">
-                                <button class="btn btn-outline-primary" onclick="searchByMaKH()">
-                                    <i class="fas fa-search"></i>
-                                </button>
-                            </div>
-                        </div>
+                        
 
                         <!-- Ghế đã đặt theo suất chiếu -->
                         <div class="mb-3">
@@ -195,211 +216,226 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Hàm hiển thị lỗi validation
-        function displayErrors(errors) {
-            for (const [field, messages] of Object.entries(errors)) {
-                const errorElement = document.getElementById(`error-${field}`);
-                const inputElement = document.getElementById(field);
-                
-                if (errorElement && inputElement) {
-                    errorElement.textContent = messages[0];
-                    inputElement.classList.add('is-invalid');
-                }
-            }
-        }
+        function showAlert(message, type = 'info') {
+    const alertContainer = document.getElementById('alertContainer');
+    alertContainer.innerHTML = `
+        <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+         `;
+    }
+
+    // Hàm ẩn alert
+    function hideAlert() {
+    const alertContainer = document.getElementById('alertContainer');
+        alertContainer.innerHTML = '';
+    }
+
 
         // Hàm reset lỗi
-        function resetErrors() {
-            document.querySelectorAll('.is-invalid').forEach(element => {
-                element.classList.remove('is-invalid');
-            });
-            document.querySelectorAll('.invalid-feedback').forEach(element => {
-                element.textContent = '';
-            });
-        }
-
-        // Reset lỗi khi người dùng bắt đầu nhập
-        document.querySelectorAll('#formThemVe input').forEach(input => {
-            input.addEventListener('input', function() {
-                if (this.classList.contains('is-invalid')) {
-                    this.classList.remove('is-invalid');
-                    const errorElement = document.getElementById(`error-${this.id}`);
-                    if (errorElement) {
-                        errorElement.textContent = '';
-                    }
-                }
-            });
-        });
+function resetErrors() {
+    document.querySelectorAll('.is-invalid').forEach(element => {
+        element.classList.remove('is-invalid');
+    });
+    document.querySelectorAll('.invalid-feedback').forEach(element => {
+        element.textContent = '';
+    });
+}
 
         // Thêm vé
         document.getElementById('formThemVe').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Reset lỗi trước khi gửi
-            resetErrors();
-            
-            fetch('/ve', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({
-                    MaSuatChieu: document.getElementById('MaSuatChieu').value,
-                    MaPhong: document.getElementById('MaPhong').value,
-                    SoGhe: document.getElementById('SoGhe').value,
-                    MaHoaDon: document.getElementById('MaHoaDon').value || null,
-                    GiaVe: document.getElementById('GiaVe').value
-                })
-            })
-            .then(response => {
-                if (!response.ok) {
-                    // Nếu response không ok, parse lỗi
-                    return response.json().then(errorData => {
-                        throw errorData;
-                    });
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    alert('Tạo vé thành công!');
-                    location.reload();
-                } else {
-                    alert('Lỗi: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                if (error.errors) {
-                    // Hiển thị lỗi validation
-                    displayErrors(error.errors);
-                } else {
-                    alert('Lỗi: ' + (error.message || 'Có lỗi xảy ra'));
-                }
+    e.preventDefault();
+    
+    // Reset lỗi trước khi gửi
+    resetErrors();
+    hideAlert();
+    
+    fetch('/admin/ve', {  // THÊM /admin
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({
+            MaSuatChieu: document.getElementById('MaSuatChieu').value,
+            MaPhong: document.getElementById('MaPhong').value,
+            SoGhe: document.getElementById('SoGhe').value,
+            MaHoaDon: document.getElementById('MaHoaDon').value || null,
+            GiaVe: document.getElementById('GiaVe').value
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(errorData => {
+                throw errorData;
             });
-        });
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            showAlert('Tạo vé thành công!', 'success');
+            document.getElementById('formThemVe').reset();
+            // Tự động reload sau 2 giây
+            setTimeout(() => {
+                location.reload();
+            }, 2000);
+        } else {
+            showAlert('Lỗi: ' + data.message, 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        if (error.errors) {
+            // Hiển thị tất cả lỗi validation trong alert
+            const errorMessages = Object.values(error.errors).flat().join('<br>');
+            showAlert(errorMessages, 'danger');
+        } else {
+            showAlert('Lỗi: ' + (error.message || 'Có lỗi xảy ra khi tạo vé'), 'danger');
+        }
+    });
+});
 
-        // Các hàm tìm kiếm và thống kê
         function searchByMaHD() {
-            const maHD = document.getElementById('searchMaHD').value;
-            if (!maHD) return alert('Vui lòng nhập mã hóa đơn');
-            
-            fetch(`/ve/hoadon/${maHD}`)
-                .then(response => response.json())
-                .then(data => updateTable(data));
-        }
+    const maHD = document.getElementById('searchMaHD').value;
+    if (!maHD) return showAlert('Vui lòng nhập mã hóa đơn', 'warning');
+    
+    fetch(`/admin/ve/hoadon/${maHD}`)  // THÊM /admin
+        .then(response => response.json())
+        .then(data => updateTable(data))
+        .catch(error => {
+            console.error('Error:', error);
+            showAlert('Có lỗi xảy ra khi tìm kiếm', 'danger');
+        });
+}
 
-        function searchByMaKH() {
-            const maKH = document.getElementById('searchMaKH').value;
-            if (!maKH) return alert('Vui lòng nhập mã khách hàng');
-            
-            fetch(`/ve/khachhang/${maKH}`)
-                .then(response => response.json())
-                .then(data => updateTable(data));
-        }
+function searchGheDaDat() {
+    const maSC = document.getElementById('searchMaSC').value;
+    if (!maSC) return showAlert('Vui lòng nhập mã suất chiếu', 'warning');
+    
+    fetch(`/admin/ve/suatchieu/${maSC}`)  // THÊM /admin
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('ketQuaGheDaDat').classList.remove('d-none');
+            const gheList = data.length > 0 ? data.join(', ') : 'Không có ghế nào được đặt';
+            document.getElementById('ketQuaGheDaDat').innerHTML = 
+                `Ghế đã đặt cho suất chiếu ${maSC}: <strong>${gheList}</strong>`;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showAlert('Có lỗi xảy ra khi tìm kiếm ghế đã đặt', 'danger');
+        });
+}
 
-        function searchGheDaDat() {
-            const maSC = document.getElementById('searchMaSC').value;
-            if (!maSC) return alert('Vui lòng nhập mã suất chiếu');
-            
-            fetch(`/ve/suatchieu/${maSC}`)
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('ketQuaGheDaDat').classList.remove('d-none');
-                    document.getElementById('ketQuaGheDaDat').innerHTML = 
-                        `Ghế đã đặt cho suất chiếu ${maSC}: <strong>${data.join(', ') || 'Không có'}</strong>`;
-                });
-        }
-
-        function thongKeVeDaThanhToan() {
-            fetch('/ve/thongke/sovedathanhtoan')
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('ketQuaThongKe').classList.remove('d-none');
-                    document.getElementById('ketQuaThongKe').innerHTML = 
-                        `Số vé đã thanh toán: <strong>${data.soVeDaThanhToan}</strong>`;
-                });
-        }
-
+function thongKeVeDaThanhToan() {
+    fetch('/admin/ve/thongke/sovedathanhtoan')  // THÊM /admin
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('ketQuaThongKe').classList.remove('d-none');
+            document.getElementById('ketQuaThongKe').innerHTML = 
+                `Số vé đã thanh toán: <strong>${data.soVeDaThanhToan}</strong>`;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showAlert('Có lỗi xảy ra khi thống kê', 'danger');
+        });
+}
         function updateTable(data) {
-            const tbody = document.getElementById('tbodyVe');
-            tbody.innerHTML = '';
-            
-            data.forEach(ve => {
-                const row = `
-                    <tr id="row-${ve.MaVe}">
-                        <td>${ve.MaVe}</td>
-                        <td>${ve.MaSuatChieu}</td>
-                        <td>${ve.MaPhong}</td>
-                        <td>${ve.SoGhe}</td>
-                        <td>${ve.MaHoaDon || 'N/A'}</td>
-                        <td>${Number(ve.GiaVe).toLocaleString()}</td>
-                        <td>
-                            <span class="badge 
-                                ${ve.TrangThai == 'paid' ? 'bg-success' : 
-                                  ve.TrangThai == 'pending' ? 'bg-warning' : 
-                                  ve.TrangThai == 'cancelled' ? 'bg-danger' : 'bg-secondary'}">
-                                ${ve.TrangThai}
-                            </span>
-                        </td>
-                        <td>${ve.NgayDat || 'N/A'}</td>
-                        <td>
-                            <button class="btn btn-danger btn-sm" onclick="deleteVe(${ve.MaVe})">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                            ${ve.TrangThai != 'paid' ? 
-                                `<button class="btn btn-success btn-sm" onclick="thanhToanVe(${ve.MaVe})">
-                                    <i class="fas fa-money-bill"></i>
-                                </button>` : ''}
-                        </td>
-                    </tr>
-                `;
-                tbody.innerHTML += row;
-            });
-        }
+    const tbody = document.getElementById('tbodyVe');
+    
+    if (!data || data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9" class="text-center">Không tìm thấy vé nào</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = '';
+    
+    data.forEach(ve => {
+        const row = `
+            <tr id="row-${ve.MaVe}">
+                <td>${ve.MaVe}</td>
+                <td>${ve.MaSuatChieu}</td>
+                <td>${ve.MaPhong}</td>
+                <td>${ve.SoGhe}</td>
+                <td>${ve.MaHoaDon || 'N/A'}</td>
+                <td>${Number(ve.GiaVe).toLocaleString()}</td>
+                <td>
+                    <span class="badge 
+                        ${ve.TrangThai == 'paid' ? 'bg-success' : 
+                          ve.TrangThai == 'pending' ? 'bg-warning' : 
+                          ve.TrangThai == 'cancelled' ? 'bg-danger' : 'bg-secondary'}">
+                        ${ve.TrangThai}
+                    </span>
+                </td>
+                <td>${ve.NgayDat || 'N/A'}</td>
+                <td>
+                    <button class="btn btn-danger btn-sm" onclick="deleteVe(${ve.MaVe})">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    ${ve.TrangThai != 'paid' ? 
+                        `<button class="btn btn-success btn-sm" onclick="thanhToanVe(${ve.MaVe})">
+                            <i class="fas fa-money-bill"></i>
+                        </button>` : ''}
+                </td>
+            </tr>
+        `;
+        tbody.innerHTML += row;
+    });
+}
+
 
         // Xóa vé
         function deleteVe(maVe) {
-            if (!confirm('Bạn có chắc muốn xóa vé này?')) return;
-            
-            fetch(`/ve/${maVe}`, {
-                method: 'DELETE',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Xóa thành công!');
-                    document.getElementById(`row-${maVe}`).remove();
-                } else {
-                    alert('Lỗi: ' + data.message);
-                }
-            });
+    if (!confirm('Bạn có chắc muốn xóa vé này?')) return;
+    
+    fetch(`/admin/ve/${maVe}`, {  // THÊM /admin
+        method: 'DELETE',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
         }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert('Xóa vé thành công!', 'success');
+            document.getElementById(`row-${maVe}`).remove();
+        } else {
+            showAlert('Lỗi: ' + data.message, 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showAlert('Có lỗi xảy ra khi xóa vé', 'danger');
+    });
+}
 
         // Thanh toán vé
         function thanhToanVe(maVe) {
-            if (!confirm('Xác nhận thanh toán vé này?')) return;
-            
-            fetch(`/ve/thanhtoan/${maVe}`, {
-                method: 'PUT',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Thanh toán thành công!');
-                    location.reload();
-                } else {
-                    alert('Lỗi: ' + data.message);
-                }
-            });
+    if (!confirm('Xác nhận thanh toán vé này?')) return;
+    
+    fetch(`/admin/ve/thanhtoan/${maVe}`, {  // THÊM /admin
+        method: 'PUT',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
         }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert('Thanh toán vé thành công!', 'success');
+            setTimeout(() => {
+                location.reload();
+            }, 1500);
+        } else {
+            showAlert('Lỗi: ' + data.message, 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showAlert('Có lỗi xảy ra khi thanh toán vé', 'danger');
+    });
+}
     </script>
 </body>
 </html>

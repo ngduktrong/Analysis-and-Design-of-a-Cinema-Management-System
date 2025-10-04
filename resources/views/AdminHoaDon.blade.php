@@ -20,6 +20,28 @@
             font-size: 0.875em;
             margin-top: 0.25rem;
         }
+        .alert {
+    border-radius: 8px;
+    margin: 15px 0;
+}
+
+.alert-success {
+    background-color: #d1e7dd;
+    border-color: #badbcc;
+    color: #0f5132;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    border-color: #f5c2c7;
+    color: #842029;
+}
+
+.alert-info {
+    background-color: #cff4fc;
+    border-color: #b6effb;
+    color: #055160;
+}
     </style>
 </head>
 <body>
@@ -32,6 +54,8 @@
                 </a>
             </div>
         </div>
+        <a href="{{ url('/admin/hoadon') }}" class="btn btn-primary">nút reset trang hóa đơn</a>
+        <div id="alertContainer"></div>
 
         <!-- Form thêm hóa đơn -->
         <div class="row mt-4">
@@ -236,122 +260,164 @@
 
         // Thêm hóa đơn
         document.getElementById('formThemHoaDon').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Reset lỗi trước khi gửi
-            resetErrors();
-            
-            fetch('/hoadon', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({
-                    MaNhanVien: document.getElementById('MaNhanVien').value || null,
-                    MaKhachHang: document.getElementById('MaKhachHang').value || null,
-                    TongTien: document.getElementById('TongTien').value
-                })
-            })
-            .then(response => {
-                if (!response.ok) {
-                    // Nếu response không ok, parse lỗi
-                    return response.json().then(errorData => {
-                        throw errorData;
-                    });
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    alert('Tạo hóa đơn thành công! Mã hóa đơn: ' + data.MaHoaDon);
-                    location.reload();
-                } else {
-                    alert('Lỗi: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                if (error.errors) {
-                    // Hiển thị lỗi validation
-                    displayErrors(error.errors);
-                } else {
-                    alert('Lỗi: ' + (error.message || 'Có lỗi xảy ra'));
-                }
+    e.preventDefault();
+    
+    // Reset lỗi trước khi gửi
+    resetErrors();
+    hideAlert();
+    
+    fetch('/admin/hoadon', {  // SỬA ENDPOINT NÀY
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({
+            MaNhanVien: document.getElementById('MaNhanVien').value || null,
+            MaKhachHang: document.getElementById('MaKhachHang').value || null,
+            TongTien: document.getElementById('TongTien').value
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(errorData => {
+                throw errorData;
             });
-        });
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            showAlert('Tạo hóa đơn thành công! Mã hóa đơn: ' + data.MaHoaDon, 'success');
+            document.getElementById('formThemHoaDon').reset();
+            // Tự động reload sau 2 giây
+            setTimeout(() => {
+                location.reload();
+            }, 2000);
+        } else {
+            showAlert('Lỗi: ' + data.message, 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        if (error.errors) {
+            // Hiển thị tất cả lỗi validation trong alert
+            const errorMessages = Object.values(error.errors).flat().join('<br>');
+            showAlert(errorMessages, 'danger');
+        } else {
+            showAlert('Lỗi: ' + (error.message || 'Có lỗi xảy ra khi tạo hóa đơn'), 'danger');
+        }
+    });
+});
+
+// Hàm hiển thị alert
+function showAlert(message, type = 'info') {
+    const alertContainer = document.getElementById('alertContainer');
+    alertContainer.innerHTML = `
+        <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+}
+
+// Hàm ẩn alert
+function hideAlert() {
+    const alertContainer = document.getElementById('alertContainer');
+    alertContainer.innerHTML = '';
+}
 
         // Các hàm tìm kiếm và thống kê
         function searchByMaKH() {
-            const maKH = document.getElementById('searchMaKH').value;
-            if (!maKH) return alert('Vui lòng nhập mã khách hàng');
-            
-            fetch(`/hoadon/khachhang/${maKH}`)
-                .then(response => response.json())
-                .then(data => updateTable(data));
-        }
+    const maKH = document.getElementById('searchMaKH').value;
+    if (!maKH) return alert('Vui lòng nhập mã khách hàng');
+    
+    fetch(`/admin/hoadon/khachhang/${maKH}`)  // THÊM /admin
+        .then(response => response.json())
+        .then(data => updateTable(data))
+        .catch(error => {
+            console.error('Error:', error);
+            showAlert('Có lỗi xảy ra khi tìm kiếm', 'danger');
+        });
+}
 
-        function searchByNgay() {
-            const ngay = document.getElementById('searchNgay').value;
-            if (!ngay) return alert('Vui lòng chọn ngày');
-            
-            fetch(`/hoadon/ngay/${ngay}`)
-                .then(response => response.json())
-                .then(data => updateTable(data));
-        }
+function searchByNgay() {
+    const ngay = document.getElementById('searchNgay').value;
+    if (!ngay) return alert('Vui lòng chọn ngày');
+    
+    fetch(`/admin/hoadon/ngay/${ngay}`)  // THÊM /admin
+        .then(response => response.json())
+        .then(data => updateTable(data))
+        .catch(error => {
+            console.error('Error:', error);
+            showAlert('Có lỗi xảy ra khi tìm kiếm', 'danger');
+        });
+}
 
-        function searchByKhoangNgay() {
-            const tuNgay = document.getElementById('searchTuNgay').value;
-            const denNgay = document.getElementById('searchDenNgay').value;
-            
-            if (!tuNgay || !denNgay) return alert('Vui lòng chọn khoảng ngày');
-            
-            fetch('/hoadon/khoangngay', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({ tuNgay, denNgay })
-            })
-            .then(response => response.json())
-            .then(data => updateTable(data));
-        }
+function searchByKhoangNgay() {
+    const tuNgay = document.getElementById('searchTuNgay').value;
+    const denNgay = document.getElementById('searchDenNgay').value;
+    
+    if (!tuNgay || !denNgay) return alert('Vui lòng chọn khoảng ngày');
+    
+    fetch('/admin/hoadon/khoangngay', {  // THÊM /admin
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({ tuNgay, denNgay })
+    })
+    .then(response => response.json())
+    .then(data => updateTable(data))
+    .catch(error => {
+        console.error('Error:', error);
+        showAlert('Có lỗi xảy ra khi tìm kiếm', 'danger');
+    });
+}
 
-        function thongKeTheoNgay() {
-            const ngay = document.getElementById('thongKeNgay').value;
-            if (!ngay) return alert('Vui lòng chọn ngày');
-            
-            fetch(`/hoadon/doanhthu/ngay/${ngay}`)
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('ketQuaThongKe').classList.remove('d-none');
-                    document.getElementById('ketQuaThongKe').innerHTML = 
-                        `Doanh thu ngày ${data.ngay}: <strong>${Number(data.tongDoanhThu).toLocaleString()} VND</strong>`;
-                });
-        }
+function thongKeTheoNgay() {
+    const ngay = document.getElementById('thongKeNgay').value;
+    if (!ngay) return alert('Vui lòng chọn ngày');
+    
+    fetch(`/admin/hoadon/doanhthu/ngay/${ngay}`)  // THÊM /admin
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('ketQuaThongKe').classList.remove('d-none');
+            document.getElementById('ketQuaThongKe').innerHTML = 
+                `Doanh thu ngày ${data.ngay}: <strong>${Number(data.tongDoanhThu).toLocaleString()} VND</strong>`;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showAlert('Có lỗi xảy ra khi thống kê', 'danger');
+        });
+}
 
-        function thongKeTheoKhoangNgay() {
-            const tuNgay = document.getElementById('thongKeTuNgay').value;
-            const denNgay = document.getElementById('thongKeDenNgay').value;
-            
-            if (!tuNgay || !denNgay) return alert('Vui lòng chọn khoảng ngày');
-            
-            fetch('/hoadon/doanhthu/khoangngay', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({ tuNgay, denNgay })
-            })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('ketQuaThongKe').classList.remove('d-none');
-                document.getElementById('ketQuaThongKe').innerHTML = 
-                    `Doanh thu từ ${data.tuNgay} đến ${data.denNgay}: <strong>${Number(data.tongDoanhThu).toLocaleString()} VND</strong>`;
-            });
-        }
+function thongKeTheoKhoangNgay() {
+    const tuNgay = document.getElementById('thongKeTuNgay').value;
+    const denNgay = document.getElementById('thongKeDenNgay').value;
+    
+    if (!tuNgay || !denNgay) return alert('Vui lòng chọn khoảng ngày');
+    
+    fetch('/admin/hoadon/doanhthu/khoangngay', {  // THÊM /admin
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({ tuNgay, denNgay })
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('ketQuaThongKe').classList.remove('d-none');
+        document.getElementById('ketQuaThongKe').innerHTML = 
+            `Doanh thu từ ${data.tuNgay} đến ${data.denNgay}: <strong>${Number(data.tongDoanhThu).toLocaleString()} VND</strong>`;
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showAlert('Có lỗi xảy ra khi thống kê', 'danger');
+    });
+}
 
         function updateTable(data) {
             const tbody = document.getElementById('tbodyHoaDon');
@@ -382,43 +448,53 @@
 
         // Xóa hóa đơn
         function deleteHoaDon(maHoaDon) {
-            if (!confirm('Bạn có chắc muốn xóa hóa đơn này?')) return;
-            
-            fetch(`/hoadon/${maHoaDon}`, {
-                method: 'DELETE',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Xóa thành công!');
-                    document.getElementById(`row-${maHoaDon}`).remove();
-                } else {
-                    alert('Lỗi: ' + data.message);
-                }
-            });
+    if (!confirm('Bạn có chắc muốn xóa hóa đơn này?')) return;
+    
+    fetch(`/admin/hoadon/${maHoaDon}`, {  // SỬA ENDPOINT NÀY
+        method: 'DELETE',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
         }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert('Xóa hóa đơn thành công!', 'success');
+            document.getElementById(`row-${maHoaDon}`).remove();
+        } else {
+            showAlert('Lỗi: ' + data.message, 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showAlert('Có lỗi xảy ra khi xóa hóa đơn', 'danger');
+    });
+}
 
         // Đồng bộ ngày lập
         function syncNgayLap(maHoaDon) {
-            fetch(`/hoadon/capnhatngaylap/${maHoaDon}`, {
-                method: 'PUT',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Đồng bộ thành công!');
-                    location.reload();
-                } else {
-                    alert('Lỗi: ' + data.message);
-                }
-            });
+    fetch(`/admin/hoadon/capnhatngaylap/${maHoaDon}`, {  // THÊM /admin
+        method: 'PUT',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
         }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert('Đồng bộ ngày lập thành công!', 'success');
+            setTimeout(() => {
+                location.reload();
+            }, 1500);
+        } else {
+            showAlert('Lỗi: ' + data.message, 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showAlert('Có lỗi xảy ra khi đồng bộ ngày lập', 'danger');
+    });
+}
     </script>
 </body>
 </html>

@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 
-
 class RegisterController extends Controller
 {
     public function showRegistrationForm()
@@ -27,35 +26,39 @@ class RegisterController extends Controller
             'MatKhau' => 'required|string|min:6|confirmed',
         ]);
 
-        DB::transaction(function () use ($request) {
-            // Tạo mã người dùng
-            $maNguoiDung = $this->generateMaNguoiDung();
+        try {
+            DB::transaction(function () use ($request) {
+                // Tạo mã người dùng
+                $maNguoiDung = $this->generateMaNguoiDung();
 
-            // Tạo người dùng
-            $nguoiDung = NguoiDung::create([
-                'MaNguoiDung' => $maNguoiDung,
-                'HoTen' => $request->HoTen,
-                'SoDienThoai' => $request->SoDienThoai,
-                'Email' => $request->Email,
-                'LoaiNguoiDung' => 'KhachHang',
-            ]);
+                // Tạo người dùng
+                $nguoiDung = NguoiDung::create([
+                    'MaNguoiDung' => $maNguoiDung,
+                    'HoTen' => $request->HoTen,
+                    'SoDienThoai' => $request->SoDienThoai,
+                    'Email' => $request->Email,
+                    'LoaiNguoiDung' => 'KhachHang',
+                ]);
 
-            // Tạo khách hàng
-            KhachHang::create([
-                'MaNguoiDung' => $maNguoiDung,
-                'DiemTichLuy' => 0,
-            ]);
+                // Tạo khách hàng
+                KhachHang::create([
+                    'MaNguoiDung' => $maNguoiDung,
+                    'DiemTichLuy' => 0,
+                ]);
 
-            // Tạo tài khoản
-            TaiKhoan::create([
-                'TenDangNhap' => $request->TenDangNhap,
-                'MatKhau' => Hash::make($request->MatKhau),
-                'LoaiTaiKhoan' => 'user',
-                'MaNguoiDung' => $maNguoiDung,
-            ]);
-        });
+                // Tạo tài khoản - sử dụng mutator để hash mật khẩu
+                TaiKhoan::create([
+                    'TenDangNhap' => $request->TenDangNhap,
+                    'MatKhau' => $request->MatKhau, // Mutator sẽ tự động hash
+                    'LoaiTaiKhoan' => 'user',
+                    'MaNguoiDung' => $maNguoiDung,
+                ]);
+            });
 
-        return redirect()->route('login')->with('success', 'Đăng ký thành công! Vui lòng đăng nhập.');
+            return redirect()->route('login')->with('success', 'Đăng ký thành công! Vui lòng đăng nhập.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Đăng ký thất bại. Vui lòng thử lại.')->withInput();
+        }
     }
 
     private function generateMaNguoiDung(): string

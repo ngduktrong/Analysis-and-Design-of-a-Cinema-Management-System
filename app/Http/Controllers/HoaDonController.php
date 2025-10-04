@@ -35,6 +35,7 @@ class HoaDonController extends Controller
         'TongTien.min' => 'Tổng tiền không được âm',
     ]);
 
+
     try {
         $hoadon = HoaDon::create($request->all());
         

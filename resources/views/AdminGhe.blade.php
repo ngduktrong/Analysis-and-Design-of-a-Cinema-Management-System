@@ -61,9 +61,9 @@
                 </div>
                 
                 <div class="col-md-4">
-                    <label for="SoLuongGhe" class="form-label">Số Ghế</label>
-                    <input type="text" class="form-control" name="SoLuongGhe" value="{{ $editingGhe ? $editingGhe->SoGhe : old('SoGhe') }}" required>
-                </div>
+                 <label for="SoGhe" class="form-label">Số Ghế</label>
+                   <input type="text" class="form-control" name="SoGhe" value="{{ $editingGhe ? $editingGhe->SoGhe : old('SoGhe') }}" required>
+                    </div>
                 
                 <div class="col-md-4 d-flex align-items-end">
                     <button type="submit" class="btn btn-primary me-2">{{ $editingGhe ? 'Cập nhật' : 'Thêm' }}</button>

@@ -101,7 +101,8 @@ class GheController extends BaseCrudController
 
             while ($created < $quantity && $created < $soGheConLai) {
                 $rowLabel = $getRowLabel($rowIndex);
-                $seatCode = $rowLabel . $seatNum;
+                // SỬA Ở ĐÂY: Định dạng số ghế có 2 chữ số với số 0 ở đầu
+                $seatCode = $rowLabel . str_pad($seatNum, 2, '0', STR_PAD_LEFT);
 
                 if (Ghe::where('MaPhong', $maPhong)->where('SoGhe', $seatCode)->exists()) {
                     $skipped++;
