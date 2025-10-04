@@ -69,7 +69,17 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
 Route::get('/admin/phim', [PhimController::class, 'showAdminPage'])->name('admin.phim');
 
 // CRUD phim (tận dụng BaseCrudController)
-Route::resource('phim', PhimController::class);
+Route::resource('movies', PhimController::class)->names([
+    'index' => 'phim.index',
+    'create' => 'phim.create',
+    'store' => 'phim.store', 
+    'show' => 'phim.show',
+    'edit' => 'phim.edit',
+    'update' => 'phim.update',
+    'destroy' => 'phim.destroy'
+])->parameters([
+    'movies' => 'phim'
+]);
 // Routes cho quản lý phòng chiếu
 Route::prefix('admin')->group(function () {
     Route::get('/phongchieu', [PhongChieuController::class, 'index'])->name('admin.phongchieu.index');
@@ -122,8 +132,8 @@ Route::get('/ve/suatchieu/{maSuatChieu}', [VeController::class, 'getSoGheDaDatBy
 Route::get('/ve/thongke/sovedathanhtoan', [VeController::class, 'getSoVeDaThanhToan']);
 
 // Admin Views
-Route::get('/admin/hoadon', [HoaDonController::class, 'index']);
-Route::get('/admin/ve', [VeController::class, 'index']);
+Route::get('/admin/hoadon', [HoaDonController::class, 'index'])->name('admin.hoadon.index');
+Route::get('/admin/ve', [VeController::class, 'index'])->name('admin.ve.index');
 // nguoiDUng Routes
 Route::prefix('admin')->group(function () {
     Route::get('/nguoidung', [NguoiDungController::class, 'adminIndex'])->name('admin.nguoidung.index');

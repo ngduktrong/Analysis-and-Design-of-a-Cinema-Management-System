@@ -189,7 +189,7 @@
 
                 // set form action to update route
                 // route('phim.update', id) => /phim/{id}
-                form.action = '/phim/' + editId;
+                 form.action = "{{ route('phim.update', ':id') }}".replace(':id', editId);
 
                 // add method override _method=PUT if not exists
                 methodOverrideDiv.innerHTML = '<input type="hidden" name="_method" value="PUT">';

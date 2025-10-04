@@ -28,6 +28,9 @@ class Phim extends Model
     /**
      * Quan hệ: 1 phim có nhiều suất chiếu
      */
+    protected $casts = [
+        'NgayKhoiChieu' => 'date',
+    ];
     public function suatChieu()
     {
         return $this->hasMany(SuatChieu::class, 'MaPhim', 'MaPhim');
