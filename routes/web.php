@@ -148,8 +148,8 @@ Route::get('/home/{id}', [CustomerHomeController::class, 'show'])->name('home.sh
 
 // Các route đặt vé (chọn phòng, chọn suất, chọn ghế, xác nhận vé) -> cần login
 Route::middleware(['auth'])->group(function () {
-    Route::get('/home/{id}/phong', [CustomerSChieuController::class, 'chonPhong'])->name('suatchieu.phong');
-    Route::get('/home/{id}/phong/{maPhong}/suatchieu', [CustomerSChieuController::class, 'chonSuat'])->name('suatchieu.index');
+    
+    // Route::get('/home/{id}/phong/{maPhong}/suatchieu', [CustomerSChieuController::class, 'chonSuat'])->name('suatchieu.index');
     Route::get('/chon-ghe/{masuatchieu}', [CustomerGheController::class, 'index'])->name('customer.ghe.index');
     Route::post('/chon-ghe/{masuatchieu}', [CustomerGheController::class, 'chonGhe'])->name('customer.ghe.chon');
     Route::get('/ve/confirm', [CustomerVeController::class, 'confirm'])->name('ve.confirm');

@@ -150,7 +150,7 @@
                 @foreach ($ngayChieu as $ngay)
                     <a href="{{ route('home.show', ['id' => $phim->MaPhim, 'ngay' => $ngay]) }}"
                         class="date-tab {{ request('ngay') == $ngay ? 'active' : '' }}">
-                        <div>{{ \Carbon\Carbon::parse($ngay)->format('d') }}</div>
+                        <div>{{ \Carbon\Carbon::parse($ngay)->format('d/m') }}</div>
                         <div>{{ \Carbon\Carbon::parse($ngay)->translatedFormat('l') }}</div>
                     </a>
                 @endforeach
@@ -162,7 +162,7 @@
 @foreach ($suatTheoNgay as $suat)
     <button class="time-slot">
         @auth
-            <a href="{{ route('suatchieu.phong', ['id' => $phim->MaPhim, 'maPhong' => $suat->MaPhong]) }}">
+            <a href="{{  route('customer.ghe.index', $suat->MaSuatChieu) }}">
                 {{ \Carbon\Carbon::parse($suat->NgayGioChieu)->format('H:i') }}
             </a>
         @else
