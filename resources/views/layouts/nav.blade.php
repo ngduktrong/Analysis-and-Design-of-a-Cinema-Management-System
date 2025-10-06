@@ -13,7 +13,18 @@
         }
 
     </style>
-   
+   <script>
+    document.addEventListener("DOMContentLoaded", function(){
+        comming_soon =document.querySelectorAll(".comming_soon");
+        comming_soon.forEach(function(link){
+            link.addEventListener("click",function(){
+                event.preventDefault(); // 
+                alert("Chức năng đang phát triển, vui lòng quay lại sau!");
+            })
+            
+        });
+    })
+   </script>
 
    <div class="home-controll">
 
@@ -43,7 +54,8 @@
                                     {{ Auth::user()->TenDangNhap }}
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                    <li><a class="dropdown-item" href="#">Thông tin cá nhân</a></li>
+                                    <li><a class="dropdown-item"  href="{{route('user.profile')}}">Thông tin cá nhân</a></li>
+                                    <li><a class="dropdown-item comming_soon" href="#">Vé đã mua</a></li>
                                     <li>
                                         <form method="POST" action="{{ route('logout') }}">
                                             @csrf

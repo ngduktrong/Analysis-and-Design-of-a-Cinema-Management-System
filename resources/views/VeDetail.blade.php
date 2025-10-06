@@ -39,6 +39,6 @@
 
 <p><b>Tổng tiền:</b> {{ number_format($hoaDon->TongTien, 0, ',', '.') }} VND</p>
 
-<button onclick="window.print()">In vé</button>
+
 <a href="{{ route('home') }}">Quay về trang chủ</a>
 @endsection

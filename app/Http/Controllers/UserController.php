@@ -14,7 +14,7 @@ class UserController extends Controller
     public function profile(){
         $user  = Auth::user();
         $NguoiDung = NguoiDung::find($user->MaNguoiDung);
-        return view('user.profile',compact('user', 'NguoiDung'));
+        return view('CustomerProfile',compact('user', 'NguoiDung'));
     }
     #cap nhat profile
     public function updateProfile(Request $request){
@@ -31,7 +31,7 @@ class UserController extends Controller
             'Email'=>$request->email,
             'SoDienThoai'=>$request->so_dien_thoai,
         ]);
-        return redirect()->back()->with('success','cap nhat thanh cong');
+        return redirect()->back()->with('success','Cập nhật thành công');
     }
     #thay doi mat khau
     public function changePassword(Request $request){
@@ -42,11 +42,11 @@ class UserController extends Controller
 
         $taikhoan = Auth::user();
         if(!Hash::check($request->current_password,$taikhoan->MatKhau)){
-            return redirect()->back()->with('error','Mat khau hien tai khong dung');
+            return redirect()->back()->with('error','Mật khẩu hiện tại không đúng');
         }
         $taikhoan->MatKhau = Hash::make($request->new_password);
         $taikhoan->save();
-        return redirect()->back()->with('success','doi mat khau thanh cong');
+        return redirect()->back()->with('success','Đổi mật khẩu thành công');
     }
     
 }

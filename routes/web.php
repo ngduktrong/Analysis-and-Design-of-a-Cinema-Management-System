@@ -21,6 +21,7 @@ use App\Http\Controllers\CustomerHomeController;
 use App\Http\Controllers\CustomerSChieuController;
 use App\Http\Controllers\CustomerGheController;
 use App\Http\Controllers\CustomerVeController;
+use App\Http\Controllers\UserController;
 
 // ========================= ROUTE MỞ ĐẦU =========================
 Route::get('/', function () {
@@ -50,7 +51,7 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('movies', PhimController::class)->names([
             'index' => 'phim.index',
             'create' => 'phim.create',
-            'store' => 'phim.store', 
+            'store' => 'phim.store',
             'show' => 'phim.show',
             'edit' => 'phim.edit',
             'update' => 'phim.update',
@@ -148,8 +149,18 @@ Route::get('/home/{id}', [CustomerHomeController::class, 'show'])->name('home.sh
 
 // Các route đặt vé (chọn phòng, chọn suất, chọn ghế, xác nhận vé) -> cần login
 Route::middleware(['auth'])->group(function () {
-    
-    // Route::get('/home/{id}/phong/{maPhong}/suatchieu', [CustomerSChieuController::class, 'chonSuat'])->name('suatchieu.index');
+
+
+    Route::get('/profile', [UserController::class, 'profile'])->name('user.profile');
+    Route::get('/profile/update-profile', function () {
+        return view('CustomerUpdateProfile');
+    })->name('user.showUpdateProfileForm');
+    Route::post('/profile/update', [UserController::class, 'updateProfile'])->name('user.updateProfile');
+    Route::get('/profile/change-password', function () {
+        return view('CustomerChangePassword');
+    })->name('user.showChangePasswordForm');
+    Route::post('/profile/change-password', [UserController::class, 'changePassword'])->name('user.changePassword');
+
     Route::get('/chon-ghe/{masuatchieu}', [CustomerGheController::class, 'index'])->name('customer.ghe.index');
     Route::post('/chon-ghe/{masuatchieu}', [CustomerGheController::class, 'chonGhe'])->name('customer.ghe.chon');
     Route::get('/ve/confirm', [CustomerVeController::class, 'confirm'])->name('ve.confirm');
@@ -166,9 +177,9 @@ Route::get('/test-db', function () {
         $now = DB::select('SELECT NOW() as now_time')[0]->now_time ?? null;
 
         $tablesRaw = DB::select('SHOW TABLES');
-        $tables = array_map(function ($t) { 
-            $a = (array)$t; 
-            return array_values($a)[0]; 
+        $tables = array_map(function ($t) {
+            $a = (array) $t;
+            return array_values($a)[0];
         }, $tablesRaw);
 
         $likeUpper = DB::select("SHOW TABLES LIKE 'Phim'");
@@ -192,7 +203,7 @@ Route::get('/test-db', function () {
             'phim_present_lower' => $phim_exists_lower,
             'SHOW_TABLES_like_Phim' => count($likeUpper),
             'SHOW_TABLES_like_phim' => count($likeLower),
-            'information_schema_lookup' => array_map(fn($r)=>(array)$r, $info),
+            'information_schema_lookup' => array_map(fn($r) => (array) $r, $info),
         ];
     } catch (\Exception $e) {
         return ['error' => $e->getMessage()];
