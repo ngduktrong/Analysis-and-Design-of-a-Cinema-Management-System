@@ -38,23 +38,27 @@ class CustomerHoaDonController extends Controller
      * Tạo hóa đơn mới (luôn gán MaNhanVien = 6)
      */
     public function store(Request $request)
-    {
-        $maNguoiDung = Auth::user()->MaNguoiDung;
-        $khachHang = KhachHang::where('MaNguoiDung', $maNguoiDung)->first();
+{
+    $maNguoiDung = Auth::user()->MaNguoiDung;
 
-        if (!$khachHang) {
-            return redirect()->route('home')->with('error', 'Không tìm thấy khách hàng.');
-        }
+    // kiểm tra khách hàng tồn tại
+    $khachHang = KhachHang::where('MaNguoiDung', $maNguoiDung)->first();
 
-        $hoaDon = HoaDon::create([
-            'MaKhachHang' => $khachHang->MaKhachHang,
-            'MaNhanVien'  => 6,   // cố định nhân viên số 6
-            'NgayLap'     => now(),
-            'TongTien'    => 0,   // mặc định 0, sẽ cập nhật sau khi thêm vé
-        ]);
-
-        return redirect()->route('home')->with('success', 'Tạo hóa đơn thành công!');
+    if (!$khachHang) {
+        return redirect()->route('home')->with('error', 'Không tìm thấy khách hàng.');
     }
+
+    // ✅ Lưu ý: MaKhachHang = MaNguoiDung (vì HoaDon.MaKhachHang FK → KhachHang.MaNguoiDung)
+    $hoaDon = HoaDon::create([
+        'MaKhachHang' => $khachHang->MaNguoiDung, // 👈 đây mới là đúng
+        'MaNhanVien'  => null,
+        'NgayLap'     => now(),
+        'TongTien'    => 0,
+    ]);
+
+    return redirect()->route('home')->with('success', 'Tạo hóa đơn thành công!');
+}
+
 
     /**
      * Xem chi tiết hóa đơn

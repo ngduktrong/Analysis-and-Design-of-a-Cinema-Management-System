@@ -152,15 +152,20 @@ Route::middleware(['auth'])->group(function () {
 
 
     Route::get('/profile', [UserController::class, 'profile'])->name('user.profile');
+    //danh sach ve da dat
+    Route::get('/my-tickets', [CustomerVeController::class, 'index'])->name('user.myTickets');
+    //sua thong tin nguoi dung
     Route::get('/profile/update-profile', function () {
         return view('CustomerUpdateProfile');
     })->name('user.showUpdateProfileForm');
+    
     Route::post('/profile/update', [UserController::class, 'updateProfile'])->name('user.updateProfile');
+    //thay mat khau
     Route::get('/profile/change-password', function () {
         return view('CustomerChangePassword');
     })->name('user.showChangePasswordForm');
     Route::post('/profile/change-password', [UserController::class, 'changePassword'])->name('user.changePassword');
-
+    //chon ghe, dat ve
     Route::get('/chon-ghe/{masuatchieu}', [CustomerGheController::class, 'index'])->name('customer.ghe.index');
     Route::post('/chon-ghe/{masuatchieu}', [CustomerGheController::class, 'chonGhe'])->name('customer.ghe.chon');
     Route::get('/ve/confirm', [CustomerVeController::class, 'confirm'])->name('ve.confirm');
