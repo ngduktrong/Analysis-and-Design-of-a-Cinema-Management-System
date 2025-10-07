@@ -39,7 +39,7 @@ Route::post('/register', [RegisterController::class, 'register']);
 // ========================= ROUTE ADMIN (CÓ AUTH) =========================
 // MUỐN BỎ AUTH: XÓA DÒNG Route::middleware(['auth'])->group(function () { VÀ DÒNG });
 // MUỐN THÊM AUTH: THÊM LẠI DÒNG Route::middleware(['auth'])->group(function () { VÀ });
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth','role:admin'])->group(function () {
     Route::prefix('admin')->group(function () {
         // Dashboard
         Route::get('/dashboard', function () {
@@ -145,10 +145,11 @@ Route::middleware(['auth'])->group(function () {
 
 // ========================= ROUTE USER (KHÔNG CÓ AUTH) =========================
 Route::get('/home', [CustomerHomeController::class, 'index'])->name('home');
-Route::get('/home/{id}', [CustomerHomeController::class, 'show'])->name('home.show');
-
+    Route::get('/home/{id}', [CustomerHomeController::class, 'show'])->name('home.show');
 // Các route đặt vé (chọn phòng, chọn suất, chọn ghế, xác nhận vé) -> cần login
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth','role:user'])->group(function () {
+    
+
 
 
     Route::get('/profile', [UserController::class, 'profile'])->name('user.profile');
