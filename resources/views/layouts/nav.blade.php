@@ -66,7 +66,9 @@
                             </li>
                         @endguest
 
-                        <li class="nav-item"><a class="nav-link" href="#">Introduce Author</a></li>
+                       <li class="nav-item">
+                        <a class="nav-link" href="{{ route('thongbao.index') }}">Kiểm tra vé sắp chiếu</a>
+                            </li>
                     </ul>
                 </div>
             </div>

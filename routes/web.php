@@ -22,6 +22,7 @@ use App\Http\Controllers\CustomerSChieuController;
 use App\Http\Controllers\CustomerGheController;
 use App\Http\Controllers\CustomerVeController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ThongBaoController;
 
 // ========================= ROUTE MỞ ĐẦU =========================
 Route::get('/', function () {
@@ -68,12 +69,14 @@ Route::middleware(['auth','role:admin'])->group(function () {
         Route::put('/suatchieu/{id}', [SuatChieuController::class, 'update'])->name('admin.suatchieu.update');
         Route::delete('/suatchieu/{id}', [SuatChieuController::class, 'destroy'])->name('admin.suatchieu.destroy');
 
-        // Quản lý ghế
-        Route::get('/ghe', [GheController::class, 'index'])->name('ghe.index');
-        Route::post('/ghe', [GheController::class, 'store'])->name('ghe.store');
-        Route::put('/ghe/{maPhong}/{soGhe}', [GheController::class, 'update'])->name('ghe.update');
-        Route::delete('/ghe/{maPhong}/{soGhe}', [GheController::class, 'destroy'])->name('ghe.destroy');
-        Route::get('/ghe/edit/{maPhong}/{soGhe}', [GheController::class, 'edit'])->name('ghe.edit');
+
+        // Quản lý ghế 
+    Route::get('/ghe', [GheController::class, 'index'])->name('ghe.index');
+    Route::post('/ghe', [GheController::class, 'store'])->name('ghe.store');
+    Route::get('/ghe/edit/{maPhong}/{soGhe}', [GheController::class, 'edit'])->name('ghe.edit');
+    Route::put('/ghe/{maPhong}/{soGhe}', [GheController::class, 'update'])->name('ghe.update');
+    Route::delete('/ghe/{maPhong}/{soGhe}', [GheController::class, 'destroy'])->name('ghe.destroy');
+});
 
         // Quản lý hóa đơn
         Route::get('/hoadon', [HoaDonController::class, 'index'])->name('admin.hoadon.index');
@@ -139,7 +142,7 @@ Route::middleware(['auth','role:admin'])->group(function () {
         Route::get('/kiem-tra-ve-sap-chieu/danh-sach', [KiemTraVeSapChieuController::class, 'danhSachVeSapChieu'])->name('admin.kiemtra.danhsach');
         Route::get('/kiem-tra-ve-sap-chieu/thong-bao', [KiemTraVeSapChieuController::class, 'thongBaoVeSapChieu'])->name('admin.kiemtra.thongbao');
     });
-});
+
 
 // ========================= ROUTE USER (KHÔNG CÓ AUTH) =========================
 Route::get('/home', [CustomerHomeController::class, 'index'])->name('home');
@@ -148,7 +151,7 @@ Route::get('/home', [CustomerHomeController::class, 'index'])->name('home');
 Route::middleware(['auth','role:user'])->group(function () {
     
 
-
+     Route::get('/thong-bao', [ThongBaoController::class, 'index'])->name('thongbao.index');
 
     Route::get('/profile', [UserController::class, 'profile'])->name('user.profile');
     //danh sach ve da dat
@@ -171,8 +174,7 @@ Route::middleware(['auth','role:user'])->group(function () {
     Route::post('/ve/book', [CustomerVeController::class, 'bookTicket'])->name('ve.book');
     Route::get('/ve/{maHoaDon}', [CustomerVeController::class, 'show'])->name('ve.detail');
 
-    Route::get('/thong-bao', [CustomerNotificationController::class, 'index'])->name('user.notifications');
-    Route::get('/thong-bao/danh-sach', [CustomerNotificationController::class, 'getNotifications'])->name('user.notifications.get');
+   
 });
 
 // ========================= ROUTE TEST DATABASE =========================

@@ -12,10 +12,10 @@
   <div class="container">
     <h2>Quản lý Nhân Viên</h2>
      <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary">
-                        <i class="fas fa-arrow-left"></i> Quay lại Dashboard
-                    </a>
+        <i class="fas fa-arrow-left"></i> Quay lại Dashboard
+     </a>
 
-    <!-- Form thêm / sửa nhân viên (gõ mã bằng tay) -->
+    <!-- Form thêm / sửa nhân viên -->
     <form id="nhanvien-form" class="mb-4">
       <div class="mb-3">
         <label for="MaNguoiDung" class="form-label">Mã Người Dùng (nhập bằng tay)</label>
@@ -25,7 +25,14 @@
 
       <div class="mb-3">
         <label for="ChucVu" class="form-label">Chức Vụ</label>
-        <input type="text" class="form-control" id="ChucVu" name="ChucVu">
+        <select class="form-select" id="ChucVu" name="ChucVu">
+          <option value="">-- Chọn chức vụ --</option>
+          <option value="Quản lý">Quản lý</option>
+          <option value="Nhân viên bán vé">Nhân viên bán vé</option>
+          <option value="Nhân viên kỹ thuật">Nhân viên kỹ thuật</option>
+          <option value="Nhân viên dọn dẹp">Nhân viên dọn dẹp</option>
+          <option value="Chủ Tịch Nước">chủ tịch nước</option>
+        </select>
       </div>
 
       <div class="mb-3">
@@ -35,7 +42,13 @@
 
       <div class="mb-3">
         <label for="VaiTro" class="form-label">Vai Trò</label>
-        <input type="text" class="form-control" id="VaiTro" name="VaiTro">
+        <select class="form-select" id="VaiTro" name="VaiTro">
+          <option value="">-- Chọn vai trò --</option>
+          <option value="Admin">Admin</option>
+          <option value="QuanLy">Quản lý chung</option>
+            <option value="ThuNgan">Thu ngân</option>
+          <option value="BanVe">Bán vé</option>
+        </select>
       </div>
 
       <button type="submit" id="submit-btn" class="btn btn-primary">Thêm nhân viên</button>
@@ -56,7 +69,8 @@
   </div>
 
 <script>
-/* Thiết lập CSRF token cho AJAX */
+/* === JavaScript logic giữ nguyên như bản gốc của bạn === */
+
 $.ajaxSetup({
   headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
 });
@@ -66,7 +80,6 @@ function showAlert(msg, type='danger') {
   setTimeout(()=>$('#alerts').html(''), 4000);
 }
 
-/* Load danh sách nhân viên từ endpoint /admin/nhanvien/list */
 function loadNhanVien() {
   $.get('/admin/nhanvien/list', function(res){
     if(res && res.success) {
@@ -97,7 +110,6 @@ function loadNhanVien() {
 $(function(){
   loadNhanVien();
 
-  // Thêm hoặc cập nhật
   $('#nhanvien-form').on('submit', function(e){
     e.preventDefault();
     const id = $('#MaNguoiDung').val().trim();
@@ -113,7 +125,6 @@ $(function(){
     const isEdit = $('#submit-btn').data('mode') === 'edit';
 
     if (!isEdit) {
-      // create -> POST /admin/nhanvien
       $.post('/admin/nhanvien', payload)
         .done(function(res){
           if(res.success) {
@@ -126,13 +137,12 @@ $(function(){
         })
         .fail(function(xhr){
           if(xhr.status===422 && xhr.responseJSON && xhr.responseJSON.errors) {
-            showAlert(Object.values(xhr.responseJSON.errors).flat().join('\\n'), 'warning');
+            showAlert(Object.values(xhr.responseJSON.errors).flat().join('\n'), 'warning');
           } else {
             showAlert('Lỗi server khi thêm', 'danger');
           }
         });
     } else {
-      // update -> POST with _method=PUT to /admin/nhanvien/{id}
       $.ajax({
         url: '/admin/nhanvien/' + encodeURIComponent(id),
         method: 'POST',
@@ -151,7 +161,7 @@ $(function(){
         },
         error: function(xhr){
           if(xhr.status===422 && xhr.responseJSON && xhr.responseJSON.errors) {
-            showAlert(Object.values(xhr.responseJSON.errors).flat().join('\\n'), 'warning');
+            showAlert(Object.values(xhr.responseJSON.errors).flat().join('\n'), 'warning');
           } else {
             showAlert('Lỗi server khi cập nhật', 'danger');
           }
@@ -160,7 +170,6 @@ $(function(){
     }
   });
 
-  // Hủy edit
   $('#cancel-edit-btn').on('click', function(){
     $('#nhanvien-form')[0].reset();
     $('#submit-btn').text('Thêm nhân viên').removeData('mode');
@@ -168,10 +177,8 @@ $(function(){
     $(this).hide();
   });
 
-  // Sửa: lấy dữ liệu từ danh sách đã load (không gọi API riêng), gán vào form
   $(document).on('click', '.edit-btn', function(){
     const id = $(this).data('id');
-    // Lấy danh sách hiện có từ server để đảm bảo dữ liệu mới nhất
     $.get('/admin/nhanvien/list', function(res){
       if(res && res.success) {
         const nv = res.data.find(x => String(x.MaNguoiDung) === String(id));
@@ -193,11 +200,9 @@ $(function(){
     });
   });
 
-  // Xóa
   $(document).on('click', '.delete-btn', function(){
     const id = $(this).data('id');
     if (!confirm('Bạn có muốn xóa nhân viên ' + id + '?')) return;
-    // DELETE to /admin/nhanvien/{id} (sử dụng method spoofing với POST nếu cần)
     $.ajax({
       url: '/admin/nhanvien/' + encodeURIComponent(id),
       method: 'POST',
