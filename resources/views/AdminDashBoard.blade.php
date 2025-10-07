@@ -100,28 +100,29 @@
         </div>
 
         <div class="card-grid">
-            <div class="card">
-                <h3>42</h3>
-                <p>Phim đang chiếu</p>
-            </div>
-            <div class="card">
-                <h3>1,248</h3>
-                <p>Vé đã bán hôm nay</p>
-            </div>
-            <div class="card">
-                <h3>524</h3>
-                <p>Khách hàng trực tuyến</p>
-            </div>
-            <div class="card">
-                <h3>18.5tr</h3>
-                <p>Doanh thu hôm nay</p>
-            </div>
-        </div>
-
-        <div class="chart-container">
-            <h3>Thống Kê Doanh Thu</h3>
-            <p>Biểu đồ doanh thu sẽ được hiển thị tại đây.</p>
-        </div>
+            
+           <div class="card-grid">
+    <div class="card">
+        <h3>{{ number_format($tongVeDaThanhToan) }}</h3>
+        <p>Tổng vé đã thanh toán</p>
+    </div>
+    
+    <div class="card">
+        <h3>{{ number_format($tongDoanhThu) }}đ</h3>
+        <p>Tổng doanh thu</p>
+    </div>
+    
+    <div class="card">
+        <h3>{{ number_format($tongVeHomNay) }}</h3>
+        <p>Vé hôm nay</p>
+    </div>
+    
+    <div class="card">
+        <h3>{{ number_format($tongDoanhThuHomNay) }}đ</h3>
+        <p>Doanh thu hôm nay</p>
+    </div>
+</div>
+        
     </main>
 </div>
 </body>

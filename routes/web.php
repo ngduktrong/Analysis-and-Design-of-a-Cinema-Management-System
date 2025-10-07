@@ -42,9 +42,7 @@ Route::post('/register', [RegisterController::class, 'register']);
 Route::middleware(['auth','role:admin'])->group(function () {
     Route::prefix('admin')->group(function () {
         // Dashboard
-        Route::get('/dashboard', function () {
-            return view('AdminDashBoard');
-        })->name('admin.dashboard');
+        Route::get('/dashboard', [App\Http\Controllers\AdminDashboardController::class, 'index'])->name('admin.dashboard');
 
         // Quản lý phim
         Route::get('/phim', [PhimController::class, 'showAdminPage'])->name('admin.phim');
@@ -172,6 +170,9 @@ Route::middleware(['auth','role:user'])->group(function () {
     Route::get('/ve/confirm', [CustomerVeController::class, 'confirm'])->name('ve.confirm');
     Route::post('/ve/book', [CustomerVeController::class, 'bookTicket'])->name('ve.book');
     Route::get('/ve/{maHoaDon}', [CustomerVeController::class, 'show'])->name('ve.detail');
+
+    Route::get('/thong-bao', [CustomerNotificationController::class, 'index'])->name('user.notifications');
+    Route::get('/thong-bao/danh-sach', [CustomerNotificationController::class, 'getNotifications'])->name('user.notifications.get');
 });
 
 // ========================= ROUTE TEST DATABASE =========================
