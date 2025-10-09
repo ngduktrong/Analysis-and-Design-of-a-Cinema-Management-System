@@ -215,227 +215,428 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        function showAlert(message, type = 'info') {
-    const alertContainer = document.getElementById('alertContainer');
-    alertContainer.innerHTML = `
-        <div class="alert alert-${type} alert-dismissible fade show" role="alert">
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-         `;
+<script>
+    // ============================
+    // HÀM DEBUG VÀ XỬ LÝ RESPONSE
+    // ============================
+    
+    function debugResponse(response) {
+        console.log('Response status:', response.status);
+        console.log('Response URL:', response.url);
+        console.log('Response headers:', response.headers);
+        
+        return response.text().then(text => {
+            console.log('Raw response:', text);
+            try {
+                const jsonData = JSON.parse(text);
+                console.log('Parsed JSON:', jsonData);
+                return jsonData;
+            } catch (e) {
+                console.error('Failed to parse JSON:', e);
+                return { 
+                    success: false, 
+                    message: 'Server returned non-JSON response',
+                    html: text 
+                };
+            }
+        });
     }
 
-    // Hàm ẩn alert
+    // ============================
+    // HÀM HIỂN THỊ VÀ ẨN ALERT
+    // ============================
+    
+    function showAlert(message, type = 'info') {
+        const alertContainer = document.getElementById('alertContainer');
+        alertContainer.innerHTML = `
+            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `;
+        
+        setTimeout(() => {
+            hideAlert();
+        }, 5000);
+    }
+
     function hideAlert() {
-    const alertContainer = document.getElementById('alertContainer');
+        const alertContainer = document.getElementById('alertContainer');
         alertContainer.innerHTML = '';
     }
 
+    // ============================
+    // HÀM XỬ LÝ VALIDATION ERRORS
+    // ============================
+    
+    function displayErrors(errors) {
+        for (const [field, messages] of Object.entries(errors)) {
+            const errorElement = document.getElementById(`error-${field}`);
+            const inputElement = document.getElementById(field);
+            
+            if (errorElement && inputElement) {
+                errorElement.textContent = messages[0];
+                inputElement.classList.add('is-invalid');
+            }
+        }
+    }
 
-        // Hàm reset lỗi
-function resetErrors() {
-    document.querySelectorAll('.is-invalid').forEach(element => {
-        element.classList.remove('is-invalid');
-    });
-    document.querySelectorAll('.invalid-feedback').forEach(element => {
-        element.textContent = '';
-    });
-}
+    function resetErrors() {
+        document.querySelectorAll('.is-invalid').forEach(element => {
+            element.classList.remove('is-invalid');
+        });
+        document.querySelectorAll('.invalid-feedback').forEach(element => {
+            element.textContent = '';
+        });
+    }
 
-        // Thêm vé
-        document.getElementById('formThemVe').addEventListener('submit', function(e) {
+    // Reset lỗi khi người dùng bắt đầu nhập
+    document.querySelectorAll('#formThemVe input').forEach(input => {
+        input.addEventListener('input', function() {
+            if (this.classList.contains('is-invalid')) {
+                this.classList.remove('is-invalid');
+                const errorElement = document.getElementById(`error-${this.id}`);
+                if (errorElement) {
+                    errorElement.textContent = '';
+                }
+            }
+        });
+    });
+
+    // ============================
+    // XỬ LÝ FORM THÊM VÉ
+    // ============================
+    
+    document.getElementById('formThemVe').addEventListener('submit', function(e) {
     e.preventDefault();
     
-    // Reset lỗi trước khi gửi
     resetErrors();
     hideAlert();
     
-    fetch('/admin/ve', {  // THÊM /admin
+    const formData = new FormData();
+    const maSuatChieu = document.getElementById('MaSuatChieu').value;
+    const maPhong = document.getElementById('MaPhong').value;
+    const soGhe = document.getElementById('SoGhe').value;
+    const maHoaDon = document.getElementById('MaHoaDon').value;
+    const giaVe = document.getElementById('GiaVe').value;
+
+    // Validate cơ bản
+    if (!maSuatChieu || !maPhong || !soGhe || !giaVe) {
+        showAlert('Vui lòng điền đầy đủ các trường bắt buộc', 'danger');
+        return;
+    }
+
+    if (giaVe <= 0) {
+        showAlert('Giá vé phải lớn hơn 0', 'danger');
+        return;
+    }
+
+    formData.append('MaSuatChieu', maSuatChieu);
+    formData.append('MaPhong', maPhong);
+    formData.append('SoGhe', soGhe);
+    formData.append('GiaVe', giaVe);
+    if (maHoaDon) formData.append('MaHoaDon', maHoaDon);
+    formData.append('_token', '{{ csrf_token() }}');
+
+    console.log('Sending ve data:', { 
+        MaSuatChieu: maSuatChieu, 
+        MaPhong: maPhong, 
+        SoGhe: soGhe, 
+        MaHoaDon: maHoaDon, 
+        GiaVe: giaVe 
+    });
+
+    // Hiển thị loading
+    const submitBtn = document.querySelector('#formThemVe button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
+    submitBtn.disabled = true;
+
+    fetch('/admin/ve', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-        body: JSON.stringify({
-            MaSuatChieu: document.getElementById('MaSuatChieu').value,
-            MaPhong: document.getElementById('MaPhong').value,
-            SoGhe: document.getElementById('SoGhe').value,
-            MaHoaDon: document.getElementById('MaHoaDon').value || null,
-            GiaVe: document.getElementById('GiaVe').value
-        })
+        body: formData
     })
     .then(response => {
-        if (!response.ok) {
-            return response.json().then(errorData => {
-                throw errorData;
+        console.log('Response status:', response.status);
+        console.log('Response headers:', response.headers);
+        
+        // Kiểm tra nếu response là HTML (có thể là trang login)
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('text/html')) {
+            return response.text().then(html => {
+                console.error('Server returned HTML instead of JSON:', html.substring(0, 500));
+                throw new Error('Server trả về trang HTML. Có thể do lỗi xác thực.');
             });
         }
+        
         return response.json();
     })
     .then(data => {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+        
+        console.log('Response data:', data);
+        
         if (data.success) {
-            showAlert('Tạo vé thành công!', 'success');
+            showAlert('Tạo vé thành công! Mã vé: ' + (data.ve ? data.ve.MaVe : 'N/A'), 'success');
             document.getElementById('formThemVe').reset();
-            // Tự động reload sau 2 giây
             setTimeout(() => {
                 location.reload();
             }, 2000);
         } else {
-            showAlert('Lỗi: ' + data.message, 'danger');
+            if (data.errors) {
+                // Hiển thị lỗi validation cụ thể
+                displayErrors(data.errors);
+                showAlert('Có lỗi xảy ra khi tạo vé. Vui lòng kiểm tra lại thông tin.', 'danger');
+            } else {
+                showAlert('Lỗi: ' + (data.message || 'Không thể tạo vé'), 'danger');
+            }
         }
     })
     .catch(error => {
-        console.error('Error:', error);
-        if (error.errors) {
-            // Hiển thị tất cả lỗi validation trong alert
-            const errorMessages = Object.values(error.errors).flat().join('<br>');
-            showAlert(errorMessages, 'danger');
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+        
+        console.error('Fetch error:', error);
+        
+        if (error.message.includes('HTML')) {
+            showAlert('Lỗi xác thực: Bạn cần đăng nhập lại hoặc kiểm tra quyền truy cập.', 'danger');
         } else {
-            showAlert('Lỗi: ' + (error.message || 'Có lỗi xảy ra khi tạo vé'), 'danger');
+            showAlert('Lỗi kết nối: ' + error.message, 'danger');
         }
     });
 });
 
-        function searchByMaHD() {
-    const maHD = document.getElementById('searchMaHD').value;
-    if (!maHD) return showAlert('Vui lòng nhập mã hóa đơn', 'warning');
+    // ============================
+    // CÁC HÀM TÌM KIẾM
+    // ============================
     
-    fetch(`/admin/ve/hoadon/${maHD}`)  // THÊM /admin
-        .then(response => response.json())
-        .then(data => updateTable(data))
-        .catch(error => {
-            console.error('Error:', error);
-            showAlert('Có lỗi xảy ra khi tìm kiếm', 'danger');
-        });
-}
-
-function searchGheDaDat() {
-    const maSC = document.getElementById('searchMaSC').value;
-    if (!maSC) return showAlert('Vui lòng nhập mã suất chiếu', 'warning');
-    
-    fetch(`/admin/ve/suatchieu/${maSC}`)  // THÊM /admin
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('ketQuaGheDaDat').classList.remove('d-none');
-            const gheList = data.length > 0 ? data.join(', ') : 'Không có ghế nào được đặt';
-            document.getElementById('ketQuaGheDaDat').innerHTML = 
-                `Ghế đã đặt cho suất chiếu ${maSC}: <strong>${gheList}</strong>`;
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showAlert('Có lỗi xảy ra khi tìm kiếm ghế đã đặt', 'danger');
-        });
-}
-
-function thongKeVeDaThanhToan() {
-    fetch('/admin/ve/thongke/sovedathanhtoan')  // THÊM /admin
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('ketQuaThongKe').classList.remove('d-none');
-            document.getElementById('ketQuaThongKe').innerHTML = 
-                `Số vé đã thanh toán: <strong>${data.soVeDaThanhToan}</strong>`;
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showAlert('Có lỗi xảy ra khi thống kê', 'danger');
-        });
-}
-        function updateTable(data) {
-    const tbody = document.getElementById('tbodyVe');
-    
-    if (!data || data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="9" class="text-center">Không tìm thấy vé nào</td></tr>';
-        return;
+    function searchByMaHD() {
+        const maHD = document.getElementById('searchMaHD').value;
+        if (!maHD) {
+            showAlert('Vui lòng nhập mã hóa đơn', 'warning');
+            return;
+        }
+        
+        console.log('Searching by MaHD:', maHD);
+        
+        fetch(`/admin/ve/hoadon/${maHD}`)
+            .then(debugResponse)
+            .then(data => {
+                if (Array.isArray(data)) {
+                    updateTable(data);
+                    showAlert(`Tìm thấy ${data.length} vé`, 'success');
+                } else {
+                    showAlert('Không tìm thấy vé nào', 'info');
+                    updateTable([]);
+                }
+            })
+            .catch(error => {
+                console.error('Search error:', error);
+                showAlert('Lỗi tìm kiếm: ' + error.message, 'danger');
+            });
     }
-    
-    tbody.innerHTML = '';
-    
-    data.forEach(ve => {
-        const row = `
-            <tr id="row-${ve.MaVe}">
-                <td>${ve.MaVe}</td>
-                <td>${ve.MaSuatChieu}</td>
-                <td>${ve.MaPhong}</td>
-                <td>${ve.SoGhe}</td>
-                <td>${ve.MaHoaDon || 'N/A'}</td>
-                <td>${Number(ve.GiaVe).toLocaleString()}</td>
-                <td>
-                    <span class="badge 
-                        ${ve.TrangThai == 'paid' ? 'bg-success' : 
-                          ve.TrangThai == 'pending' ? 'bg-warning' : 
-                          ve.TrangThai == 'cancelled' ? 'bg-danger' : 'bg-secondary'}">
-                        ${ve.TrangThai}
-                    </span>
-                </td>
-                <td>${ve.NgayDat || 'N/A'}</td>
-                <td>
-                    <button class="btn btn-danger btn-sm" onclick="deleteVe(${ve.MaVe})">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                    ${ve.TrangThai != 'paid' ? 
-                        `<button class="btn btn-success btn-sm" onclick="thanhToanVe(${ve.MaVe})">
-                            <i class="fas fa-money-bill"></i>
-                        </button>` : ''}
-                </td>
-            </tr>
-        `;
-        tbody.innerHTML += row;
-    });
-}
 
+    function searchGheDaDat() {
+        const maSC = document.getElementById('searchMaSC').value;
+        if (!maSC) {
+            showAlert('Vui lòng nhập mã suất chiếu', 'warning');
+            return;
+        }
+        
+        console.log('Searching booked seats for show:', maSC);
+        
+        fetch(`/admin/ve/suatchieu/${maSC}`)
+            .then(debugResponse)
+            .then(data => {
+                const ketQuaGheDaDat = document.getElementById('ketQuaGheDaDat');
+                ketQuaGheDaDat.classList.remove('d-none');
+                
+                if (Array.isArray(data) && data.length > 0) {
+                    ketQuaGheDaDat.innerHTML = 
+                        `Ghế đã đặt cho suất chiếu ${maSC}: <strong>${data.join(', ')}</strong>`;
+                    ketQuaGheDaDat.className = 'alert alert-warning';
+                } else {
+                    ketQuaGheDaDat.innerHTML = `Không có ghế nào được đặt cho suất chiếu ${maSC}`;
+                    ketQuaGheDaDat.className = 'alert alert-info';
+                }
+            })
+            .catch(error => {
+                console.error('Search error:', error);
+                showAlert('Lỗi tìm kiếm: ' + error.message, 'danger');
+            });
+    }
 
-        // Xóa vé
-        function deleteVe(maVe) {
-    if (!confirm('Bạn có chắc muốn xóa vé này?')) return;
+    // ============================
+    // CÁC HÀM THỐNG KÊ
+    // ============================
     
-    fetch(`/admin/ve/${maVe}`, {  // THÊM /admin
-        method: 'DELETE',
-        headers: {
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showAlert('Xóa vé thành công!', 'success');
-            document.getElementById(`row-${maVe}`).remove();
-        } else {
-            showAlert('Lỗi: ' + data.message, 'danger');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showAlert('Có lỗi xảy ra khi xóa vé', 'danger');
-    });
-}
+    function thongKeVeDaThanhToan() {
+        console.log('Getting paid tickets stats...');
+        
+        fetch('/admin/ve/thongke/sovedathanhtoan')
+            .then(debugResponse)
+            .then(data => {
+                const ketQuaThongKe = document.getElementById('ketQuaThongKe');
+                ketQuaThongKe.classList.remove('d-none');
+                
+                if (data.soVeDaThanhToan !== undefined) {
+                    ketQuaThongKe.innerHTML = 
+                        `Số vé đã thanh toán: <strong>${data.soVeDaThanhToan}</strong>`;
+                    ketQuaThongKe.className = 'alert alert-success';
+                } else {
+                    ketQuaThongKe.innerHTML = `Không có dữ liệu thống kê`;
+                    ketQuaThongKe.className = 'alert alert-info';
+                }
+            })
+            .catch(error => {
+                console.error('Stats error:', error);
+                showAlert('Lỗi thống kê: ' + error.message, 'danger');
+            });
+    }
 
-        // Thanh toán vé
-        function thanhToanVe(maVe) {
-    if (!confirm('Xác nhận thanh toán vé này?')) return;
+    // ============================
+    // CẬP NHẬT TABLE
+    // ============================
     
-    fetch(`/admin/ve/thanhtoan/${maVe}`, {  // THÊM /admin
-        method: 'PUT',
-        headers: {
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+    function updateTable(data) {
+        const tbody = document.getElementById('tbodyVe');
+        
+        if (!data || data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="9" class="text-center">Không có dữ liệu</td></tr>';
+            return;
         }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showAlert('Thanh toán vé thành công!', 'success');
-            setTimeout(() => {
-                location.reload();
-            }, 1500);
-        } else {
-            showAlert('Lỗi: ' + data.message, 'danger');
+        
+        tbody.innerHTML = '';
+        
+        data.forEach(ve => {
+            const row = `
+                <tr id="row-${ve.MaVe}">
+                    <td>${ve.MaVe}</td>
+                    <td>${ve.MaSuatChieu}</td>
+                    <td>${ve.MaPhong}</td>
+                    <td>${ve.SoGhe}</td>
+                    <td>${ve.MaHoaDon || 'N/A'}</td>
+                    <td>${Number(ve.GiaVe).toLocaleString('vi-VN')}</td>
+                    <td>
+                        <span class="badge 
+                            ${ve.TrangThai == 'paid' ? 'bg-success' : 
+                              ve.TrangThai == 'pending' ? 'bg-warning' : 
+                              ve.TrangThai == 'cancelled' ? 'bg-danger' : 'bg-secondary'}">
+                            ${ve.TrangThai}
+                        </span>
+                    </td>
+                    <td>${formatDate(ve.NgayDat)}</td>
+                    <td>
+                        <button class="btn btn-danger btn-sm" onclick="deleteVe(${ve.MaVe})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        ${ve.TrangThai != 'paid' ? 
+                            `<button class="btn btn-success btn-sm" onclick="thanhToanVe(${ve.MaVe})">
+                                <i class="fas fa-money-bill"></i>
+                            </button>` : ''}
+                    </td>
+                </tr>
+            `;
+            tbody.innerHTML += row;
+        });
+    }
+
+    function formatDate(dateString) {
+        if (!dateString) return 'N/A';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('vi-VN') + ' ' + date.toLocaleTimeString('vi-VN');
+    }
+
+    // ============================
+    // XÓA VÉ
+    // ============================
+    
+    function deleteVe(maVe) {
+        if (!confirm('Bạn có chắc muốn xóa vé này?')) return;
+        
+        console.log('Deleting ve:', maVe);
+        
+        fetch(`/admin/ve/${maVe}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        })
+        .then(debugResponse)
+        .then(data => {
+            if (data.success) {
+                showAlert('Xóa vé thành công!', 'success');
+                document.getElementById(`row-${maVe}`).remove();
+                
+                const tbody = document.getElementById('tbodyVe');
+                if (tbody.children.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="9" class="text-center">Không có dữ liệu</td></tr>';
+                }
+            } else {
+                showAlert('Lỗi: ' + data.message, 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Delete error:', error);
+            showAlert('Có lỗi xảy ra khi xóa vé', 'danger');
+        });
+    }
+
+    // ============================
+    // THANH TOÁN VÉ
+    // ============================
+    
+    function thanhToanVe(maVe) {
+        if (!confirm('Xác nhận thanh toán vé này?')) return;
+        
+        console.log('Paying ve:', maVe);
+        
+        fetch(`/admin/ve/thanhtoan/${maVe}`, {
+            method: 'PUT',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        })
+        .then(debugResponse)
+        .then(data => {
+            if (data.success) {
+                showAlert('Thanh toán vé thành công!', 'success');
+                setTimeout(() => {
+                    location.reload();
+                }, 1500);
+            } else {
+                showAlert('Lỗi: ' + data.message, 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Payment error:', error);
+            showAlert('Có lỗi xảy ra khi thanh toán vé', 'danger');
+        });
+    }
+
+    // ============================
+    // RESET TRANG
+    // ============================
+    
+    function resetPage() {
+        console.log('Resetting page...');
+        location.reload();
+    }
+
+    // Gán sự kiện cho nút reset
+    document.addEventListener('DOMContentLoaded', function() {
+        const resetBtn = document.querySelector('a[href*="/admin/ve"]');
+        if (resetBtn) {
+            resetBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                resetPage();
+            });
         }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showAlert('Có lỗi xảy ra khi thanh toán vé', 'danger');
     });
-}
-    </script>
+    
+
+    console.log('Ve JavaScript loaded successfully');
+</script>
 </body>
 </html>

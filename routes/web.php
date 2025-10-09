@@ -37,6 +37,37 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [RegisterController::class, 'register']);
 
+
+Route::prefix('admin')->group(function () {
+    Route::get('/hoadon', [HoaDonController::class, 'index'])->name('admin.hoadon.index');
+    Route::post('/hoadon', [HoaDonController::class, 'store']);
+    Route::delete('/hoadon/{id}', [HoaDonController::class, 'destroy']);
+    
+    // Các route tìm kiếm và thống kê
+    Route::get('/hoadon/khachhang/{maKhachHang}', [HoaDonController::class, 'getByMaKhachHang']);
+    Route::get('/hoadon/ngay/{ngay}', [HoaDonController::class, 'getByNgayLap']);
+    Route::post('/hoadon/khoangngay', [HoaDonController::class, 'getByKhoangNgay']);
+    Route::get('/hoadon/doanhthu/ngay/{ngay}', [HoaDonController::class, 'getTongDoanhThuTheoNgay']);
+    Route::post('/hoadon/doanhthu/khoangngay', [HoaDonController::class, 'getTongDoanhThuTheoKhoangNgay']);
+    Route::put('/hoadon/capnhatngaylap/{maHoaDon}', [HoaDonController::class, 'capNhatNgayLapTuVe']);
+
+
+    // Vé
+    Route::get('/ve', [VeController::class, 'index'])->name('admin.ve.index');
+    Route::post('/ve', [VeController::class, 'store']);
+    Route::get('/ve/{id}', [VeController::class, 'show']);
+    Route::put('/ve/{id}', [VeController::class, 'update']);
+    Route::delete('/ve/{id}', [VeController::class, 'destroy']);
+    Route::post('/ve/danhsach', [VeController::class, 'getVesByIds']);
+    Route::put('/ve/thanhtoan/{id}', [VeController::class, 'updateTrangThaiVeToPaid']);
+    Route::get('/ve/hoadon/{maHoaDon}', [VeController::class, 'getVeByMaHoaDon']);
+    Route::get('/ve/khachhang/{maKhachHang}', [VeController::class, 'getVeByMaKhachHang']);
+    Route::get('/ve/suatchieu/{maSuatChieu}', [VeController::class, 'getSoGheDaDatBySuatChieu']);
+    Route::get('/ve/thongke/sovedathanhtoan', [VeController::class, 'getSoVeDaThanhToan']);
+});
+
+
+
 // ========================= ROUTE ADMIN (CÓ AUTH) =========================
 // MUỐN BỎ AUTH: XÓA DÒNG Route::middleware(['auth'])->group(function () { VÀ DÒNG });
 // MUỐN THÊM AUTH: THÊM LẠI DÒNG Route::middleware(['auth'])->group(function () { VÀ });
@@ -79,7 +110,7 @@ Route::middleware(['auth','role:admin'])->group(function () {
 });
 
         // Quản lý hóa đơn
-        Route::get('/hoadon', [HoaDonController::class, 'index'])->name('admin.hoadon.index');
+        /*Route::get('/hoadon', [HoaDonController::class, 'index'])->name('admin.hoadon.index');
         Route::post('/hoadon', [HoaDonController::class, 'store']);
         Route::get('/hoadon/{id}', [HoaDonController::class, 'show']);
         Route::put('/hoadon/{id}', [HoaDonController::class, 'update']);
@@ -89,10 +120,10 @@ Route::middleware(['auth','role:admin'])->group(function () {
         Route::post('/hoadon/khoangngay', [HoaDonController::class, 'getByKhoangNgay']);
         Route::get('/hoadon/doanhthu/ngay/{ngay}', [HoaDonController::class, 'getTongDoanhThuTheoNgay']);
         Route::post('/hoadon/doanhthu/khoangngay', [HoaDonController::class, 'getTongDoanhThuTheoKhoangNgay']);
-        Route::put('/hoadon/capnhatngaylap/{maHoaDon}', [HoaDonController::class, 'capNhatNgayLapTuVe']);
+        Route::put('/hoadon/capnhatngaylap/{maHoaDon}', [HoaDonController::class, 'capNhatNgayLapTuVe']);*/
 
         // Quản lý vé
-        Route::get('/ve', [VeController::class, 'index'])->name('admin.ve.index');
+        /*Route::get('/ve', [VeController::class, 'index'])->name('admin.ve.index');
         Route::post('/ve', [VeController::class, 'store']);
         Route::get('/ve/{id}', [VeController::class, 'show']);
         Route::put('/ve/{id}', [VeController::class, 'update']);
@@ -102,7 +133,7 @@ Route::middleware(['auth','role:admin'])->group(function () {
         Route::get('/ve/hoadon/{maHoaDon}', [VeController::class, 'getVeByMaHoaDon']);
         Route::get('/ve/khachhang/{maKhachHang}', [VeController::class, 'getVeByMaKhachHang']);
         Route::get('/ve/suatchieu/{maSuatChieu}', [VeController::class, 'getSoGheDaDatBySuatChieu']);
-        Route::get('/ve/thongke/sovedathanhtoan', [VeController::class, 'getSoVeDaThanhToan']);
+        Route::get('/ve/thongke/sovedathanhtoan', [VeController::class, 'getSoVeDaThanhToan']);*/
 
         // Quản lý người dùng
         Route::get('/nguoidung', [NguoiDungController::class, 'adminIndex'])->name('admin.nguoidung.index');

@@ -31,20 +31,39 @@ class SuatChieuController extends BaseCrudController
 
     public function store(Request $request)
     {
+        $messages = [
+            'NgayGioChieu.after_or_equal' => 'Thời gian chiếu không được ở quá khứ.',
+            'NgayGioChieu.required' => 'Vui lòng chọn thời gian chiếu.',
+            'NgayGioChieu.date' => 'Thời gian chiếu không hợp lệ.',
+            'MaPhim.required' => 'Vui lòng chọn phim.',
+            'MaPhim.exists' => 'Phim không tồn tại.',
+            'MaPhong.required' => 'Vui lòng chọn phòng chiếu.',
+            'MaPhong.exists' => 'Phòng chiếu không tồn tại.',
+        ];
+
         $request->validate([
             'MaPhim' => 'required|exists:Phim,MaPhim',
             'MaPhong' => 'required|exists:PhongChieu,MaPhong',
             'NgayGioChieu' => 'required|date|after_or_equal:now'
-        ]);
+        ], $messages);
+
+        // Kiểm tra thời gian trước khi điều chỉnh
+        $ngayGioChieuInput = Carbon::parse($request->NgayGioChieu);
+        if ($ngayGioChieuInput->lt(now())) {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['NgayGioChieu' => 'Không thể thêm suất chiếu trong quá khứ.']);
+        }
 
         // Xử lý logic tự động điều chỉnh thời gian
         $ngayGioChieu = $this->adjustShowtime($request);
 
-        // Kiểm tra xem thời gian sau điều chỉnh có hợp lệ không
-        if ($ngayGioChieu < now()) {
-            return redirect()->back()
-                ->withInput()
-                ->withErrors(['NgayGioChieu' => 'Thời gian chiếu không được trong quá khứ sau khi điều chỉnh. Vui lòng chọn thời gian khác.']);
+        // Thông báo nếu thời gian bị điều chỉnh
+        $thongBaoDieuChinh = '';
+        if (!$ngayGioChieu->equalTo($ngayGioChieuInput)) {
+            $thongBaoDieuChinh = 'Thời gian đã được điều chỉnh từ ' . 
+                $ngayGioChieuInput->format('d/m/Y H:i') . ' thành ' . 
+                $ngayGioChieu->format('d/m/Y H:i') . ' để tránh trùng lịch.';
         }
 
         // Tạo dữ liệu mới với thời gian đã điều chỉnh
@@ -53,34 +72,65 @@ class SuatChieuController extends BaseCrudController
 
         $result = $this->model::create($data);
         
-        return redirect()->route('admin.suatchieu.index')
-                         ->with('success', 'Thêm suất chiếu thành công. Thời gian đã được điều chỉnh để tránh trùng lịch.');
+        $redirect = redirect()->route('admin.suatchieu.index')
+                         ->with('success', 'Thêm suất chiếu thành công.');
+        
+        if ($thongBaoDieuChinh) {
+            $redirect->with('info', $thongBaoDieuChinh);
+        }
+        
+        return $redirect;
     }
 
     public function update(Request $request, $id)
     {
+        $messages = [
+            'NgayGioChieu.after_or_equal' => 'Thời gian chiếu không được ở quá khứ.',
+            'NgayGioChieu.required' => 'Vui lòng chọn thời gian chiếu.',
+            'NgayGioChieu.date' => 'Thời gian chiếu không hợp lệ.',
+            'MaPhim.required' => 'Vui lòng chọn phim.',
+            'MaPhim.exists' => 'Phim không tồn tại.',
+            'MaPhong.required' => 'Vui lòng chọn phòng chiếu.',
+            'MaPhong.exists' => 'Phòng chiếu không tồn tại.',
+        ];
+
         $request->validate([
             'MaPhim' => 'required|exists:Phim,MaPhim',
             'MaPhong' => 'required|exists:PhongChieu,MaPhong',
             'NgayGioChieu' => 'required|date|after_or_equal:now'
-        ]);
+        ], $messages);
+
+        // Kiểm tra thời gian trước khi điều chỉnh
+        $ngayGioChieuInput = Carbon::parse($request->NgayGioChieu);
+        if ($ngayGioChieuInput->lt(now())) {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['NgayGioChieu' => 'Không thể cập nhật suất chiếu thành thời gian trong quá khứ.']);
+        }
 
         // Xử lý logic tự động điều chỉnh thời gian
         $ngayGioChieu = $this->adjustShowtime($request, $id);
 
-        // Kiểm tra xem thời gian sau điều chỉnh có hợp lệ không
-        if ($ngayGioChieu < now()) {
-            return redirect()->back()
-                ->withInput()
-                ->withErrors(['NgayGioChieu' => 'Thời gian chiếu không được trong quá khứ sau khi điều chỉnh. Vui lòng chọn thời gian khác.']);
+        // Thông báo nếu thời gian bị điều chỉnh
+        $thongBaoDieuChinh = '';
+        if (!$ngayGioChieu->equalTo($ngayGioChieuInput)) {
+            $thongBaoDieuChinh = 'Thời gian đã được điều chỉnh từ ' . 
+                $ngayGioChieuInput->format('d/m/Y H:i') . ' thành ' . 
+                $ngayGioChieu->format('d/m/Y H:i') . ' để tránh trùng lịch.';
         }
 
         // Cập nhật dữ liệu với thời gian đã điều chỉnh
         $item = $this->model::findOrFail($id);
         $item->update(array_merge($request->all(), ['NgayGioChieu' => $ngayGioChieu]));
         
-        return redirect()->route('admin.suatchieu.index')
-                         ->with('success', 'Cập nhật suất chiếu thành công. Thời gian đã được điều chỉnh để tránh trùng lịch.');
+        $redirect = redirect()->route('admin.suatchieu.index')
+                         ->with('success', 'Cập nhật suất chiếu thành công.');
+        
+        if ($thongBaoDieuChinh) {
+            $redirect->with('info', $thongBaoDieuChinh);
+        }
+        
+        return $redirect;
     }
 
     public function destroy($id)
@@ -104,13 +154,13 @@ class SuatChieuController extends BaseCrudController
         $phimMoi = Phim::find($maPhim);
         $thoiLuongPhimMoi = $phimMoi->ThoiLuong;
 
-        $maxAttempts = 20; // Tăng số lần thử để xử lý nhiều suất chiếu liên tiếp
+        $maxAttempts = 20;
         $attempt = 0;
         
         do {
             $adjusted = false;
             
-            // Tìm tất cả suất chiếu trong cùng PHÒNG (bất kể phim nào) trong ngày
+            // Tìm tất cả suất chiếu trong cùng PHÒNG trong ngày
             $query = SuatChieu::where('MaPhong', $maPhong)
                 ->whereDate('NgayGioChieu', $ngayGioChieu->toDateString());
 
@@ -133,11 +183,10 @@ class SuatChieuController extends BaseCrudController
                     // Điều chỉnh thời gian chiếu mới thành thời gian kết thúc + 10 phút
                     $ngayGioChieu = $endTime->copy()->addMinutes(10);
                     $adjusted = true;
-                    break; // Thoát vòng lặp để kiểm tra lại từ đầu với thời gian mới
+                    break;
                 }
                 
                 // Kiểm tra xem suất chiếu mới có "cắt ngang" suất chiếu hiện có không
-                // (thời gian bắt đầu mới trước khi kết thúc nhưng kết thúc mới sau khi bắt đầu)
                 $endTimeMoi = $ngayGioChieu->copy()->addMinutes($thoiLuongPhimMoi);
                 if ($ngayGioChieu->lt($endTime) && $endTimeMoi->gt($startTime)) {
                     $ngayGioChieu = $endTime->copy()->addMinutes(10);
