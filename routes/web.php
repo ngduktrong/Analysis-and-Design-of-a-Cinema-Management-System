@@ -128,21 +128,21 @@ Route::middleware(['auth','role:admin'])->group(function () {
         Route::delete('/khach-hang/{id}', [KhachHangController::class, 'destroy'])->name('admin.khachhang.destroy');
 
         // Quản lý nhân viên
-        Route::get('/nhanvien', function () {
-            return view('AdminNhanVien');
-        })->name('admin.nhanvien.page');
-        Route::get('/nhanvien/list', [NhanVienController::class, 'index'])->name('admin.nhanvien.list');
+        Route::get('/nhanvien', [NhanVienController::class, 'index'])->name('admin.nhanvien.index');
+        Route::get('/nhanvien/check/{maNguoiDung}', [NhanVienController::class, 'checkMaNguoiDung'])->name('admin.nhanvien.check');
         Route::post('/nhanvien', [NhanVienController::class, 'store'])->name('admin.nhanvien.store');
+        Route::get('/nhanvien/{id}/edit', [NhanVienController::class, 'edit'])->name('admin.nhanvien.edit');
         Route::put('/nhanvien/{id}', [NhanVienController::class, 'update'])->name('admin.nhanvien.update');
         Route::delete('/nhanvien/{id}', [NhanVienController::class, 'destroy'])->name('admin.nhanvien.destroy');
-        Route::get('/nhanvien/nguoidung-chua-co', [NhanVienController::class, 'getNguoiDungChuaCoTaiKhoan'])->name('admin.nhanvien.nguoidung_chua_co');
+
+
 
         // Kiểm tra vé sắp chiếu
         Route::get('/kiem-tra-ve-sap-chieu', [KiemTraVeSapChieuController::class, 'index'])->name('admin.kiemtra.index');
         Route::get('/kiem-tra-ve-sap-chieu/danh-sach', [KiemTraVeSapChieuController::class, 'danhSachVeSapChieu'])->name('admin.kiemtra.danhsach');
         Route::get('/kiem-tra-ve-sap-chieu/thong-bao', [KiemTraVeSapChieuController::class, 'thongBaoVeSapChieu'])->name('admin.kiemtra.thongbao');
+    
     });
-
 
 // ========================= ROUTE USER (KHÔNG CÓ AUTH) =========================
 Route::get('/home', [CustomerHomeController::class, 'index'])->name('home');

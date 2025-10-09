@@ -82,7 +82,7 @@
     <nav>
         <a href="{{ route('admin.taikhoan.index') }}">Tài Khoản</a>
     <a href="{{ route('admin.nguoidung.index') }}">Người Dùng</a>
-    <a href="{{ route('admin.nhanvien.page') }}">Nhân Viên</a>
+    <a href="{{ route('admin.nhanvien.index') }}">Nhân Viên</a>
 
     <a href="{{ route('admin.khachhang.index') }}">Khách Hàng</a>
     <a href="{{ route('admin.phim') }}">Phim</a>
