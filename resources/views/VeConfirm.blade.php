@@ -137,12 +137,36 @@
     const paymentForm = document.getElementById('paymentForm');
     const overlay = document.getElementById('successOverlay');
 
-    paymentForm.addEventListener('submit', function(event) {
-        event.preventDefault(); // Ngăn submit thật lúc đầu
-        overlay.style.display = 'flex';
-        setTimeout(() => {
-            window.location.href = "http://127.0.0.1:8000/ve/68";
-        }, 5000);
+    paymentForm.addEventListener('submit', async function(event) {
+        event.preventDefault(); // Ngăn submit thật, để xử lý AJAX
+        overlay.style.display = 'flex'; // Hiện overlay
+
+        const formData = new FormData(paymentForm);
+
+        try {
+            const response = await fetch(paymentForm.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            });
+
+            // Laravel trả redirect -> fetch không tự theo dõi redirect, nên ta lấy URL từ response
+            if (response.redirected) {
+                const redirectUrl = response.url;
+                setTimeout(() => {
+                    window.location.href = redirectUrl;
+                }, 3000);
+            } else {
+                overlay.style.display = 'none';
+                alert("❌ Có lỗi xảy ra khi thanh toán!");
+            }
+        } catch (error) {
+            overlay.style.display = 'none';
+            alert("⚠️ Lỗi kết nối server!");
+        }
     });
 </script>
+
 @endsection
