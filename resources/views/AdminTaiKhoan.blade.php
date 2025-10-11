@@ -6,26 +6,255 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Quản lý Tài khoản</title>
     <style>
-        /* giữ layout đơn giản: 2 cột: danh sách | form */
-        body { font-family: Arial, sans-serif; padding: 16px; }
-        .container { display: flex; gap: 20px; }
-        .card { border: 1px solid #ddd; padding: 12px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        .left { flex: 2; }
-        .right { flex: 1; min-width: 320px; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid #eee; padding: 8px; text-align: left; }
-        th { background: #f7f7f7; }
-        .actions button { margin-right: 6px; }
-        .form-row { margin-bottom: 8px; }
-        label { display:block; font-weight:600; margin-bottom:4px; }
-    </style>
+    body {
+        font-family: 'Segoe UI', Arial, sans-serif;
+        background-color: #f8f9fa;
+        color: #333;
+        line-height: 1.6;
+        padding: 20px;
+    }
+    
+    h2 {
+        color: #1a1a1a;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #e9ecef;
+        text-align: center;
+    }
+    
+    /* Nút quay lại Dashboard */
+    .btn-back-dashboard {
+        background-color: #2c3e50;
+        border: 1px solid #2c3e50;
+        color: white;
+        padding: 0.6rem 1.2rem;
+        border-radius: 6px;
+        font-weight: 500;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .btn-back-dashboard:hover {
+        background-color: #1a252f;
+        border-color: #1a252f;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        text-decoration: none;
+    }
+    
+    .container {
+        display: flex;
+        gap: 25px;
+        margin-top: 1rem;
+    }
+    
+    .card {
+        background: white;
+        border: 1px solid #e0e0e0;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    
+    .left {
+        flex: 2;
+    }
+    
+    .right {
+        flex: 1;
+        min-width: 350px;
+    }
+    
+    h3 {
+        color: #1a1a1a;
+        font-weight: 600;
+        margin-bottom: 1.2rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #e9ecef;
+        text-align: center;
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        border-radius: 6px;
+        overflow: hidden;
+        box-shadow: 0 0 0 1px #e9ecef;
+    }
+    
+    th, td {
+        border: 1px solid #e9ecef;
+        padding: 0.75rem;
+        text-align: left;
+    }
+    
+    th {
+        background: #2c3e50;
+        color: white;
+        font-weight: 600;
+        border-color: #2c3e50;
+    }
+    
+    tbody tr:nth-child(even) {
+        background-color: #f8f9fa;
+    }
+    
+    tbody tr:hover {
+        background-color: #e9ecef;
+    }
+    
+    .actions button {
+        margin-right: 6px;
+        padding: 0.4rem 0.8rem;
+        border: none;
+        border-radius: 4px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .actions button:first-child {
+        background-color: #e9b949;
+        color: #000;
+    }
+    
+    .actions button:first-child:hover {
+        background-color: #d4a63c;
+        transform: translateY(-1px);
+    }
+    
+    .actions button:last-child {
+        background-color: #dc3545;
+        color: white;
+    }
+    
+    .actions button:last-child:hover {
+        background-color: #c82333;
+        transform: translateY(-1px);
+    }
+    
+    .form-row {
+        margin-bottom: 1rem;
+    }
+    
+    label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #495057;
+    }
+    
+    input, select {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #ced4da;
+        border-radius: 6px;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+    }
+    
+    input:focus, select:focus {
+        border-color: #6c757d;
+        box-shadow: 0 0 0 0.2rem rgba(108, 117, 125, 0.15);
+        outline: none;
+    }
+    
+    input[readonly] {
+        background-color: #f8f9fa;
+        color: #6c757d;
+    }
+    
+    select[disabled] {
+        background-color: #f8f9fa;
+        color: #6c757d;
+    }
+    
+    small {
+        color: #6c757d;
+        font-weight: normal;
+    }
+    
+    button[type="submit"], 
+    button[type="button"]:not(.actions button) {
+        background-color: #2c3e50;
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 6px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    button[type="submit"]:hover, 
+    button[type="button"]:not(.actions button):hover {
+        background-color: #1a252f;
+        transform: translateY(-1px);
+    }
+    
+    #cancel-btn {
+        background-color: #6c757d;
+        margin-left: 0.5rem;
+    }
+    
+    #cancel-btn:hover {
+        background-color: #5a6268;
+    }
+    
+    .alert-success {
+        padding: 12px 16px;
+        background: #d4edda;
+        border: 1px solid #c3e6cb;
+        border-radius: 6px;
+        color: #155724;
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+    
+    .alert-error {
+        padding: 12px 16px;
+        background: #f8d7da;
+        border: 1px solid #f5c6cb;
+        border-radius: 6px;
+        color: #721c24;
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+    
+    span[style*="color:red"] {
+        color: #dc3545 !important;
+    }
+    
+    @media (max-width: 768px) {
+        .container {
+            flex-direction: column;
+        }
+        
+        .right {
+            min-width: auto;
+        }
+        
+        body {
+            padding: 15px;
+        }
+    }
+</style>
 </head>
 <body>
 
-<h2>Quản lý Tài khoản</h2>
- <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary">
-                        <i class="fas fa-arrow-left"></i> Quay lại Dashboard
-                    </a>
+        <h2>Quản lý Tài khoản</h2>
+        <a href="{{ route('admin.dashboard') }}" class="btn-back-dashboard">
+            <i class="fas fa-arrow-left"></i> Quay lại Dashboard
+        </a>
 
 @if(session('success'))
     <div style="padding:8px;background:#e6ffed;border:1px solid #b7f2c8;margin-bottom:12px;">
