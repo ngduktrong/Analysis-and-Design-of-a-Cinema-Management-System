@@ -122,4 +122,11 @@ class KiemTraVeSapChieuController extends Controller
             ]
         ]);
     }
+    public function triggerUserNotification()
+{
+    // ... logic lấy thông tin user và vé sắp chiếu
+    
+    // Chuyển hướng đến trang thông báo với chế độ alert
+    return redirect()->route('thongbao', ['alert' => 'true']);
+}
 }
