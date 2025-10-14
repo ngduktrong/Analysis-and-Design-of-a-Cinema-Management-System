@@ -247,25 +247,78 @@
             padding: 15px;
         }
     }
+    .alert-toast {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 20px;
+        border-radius: 6px;
+        color: white;
+        font-weight: 500;
+        z-index: 1000;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        animation: slideIn 0.3s ease-out;
+    }
+
+    .alert-toast.success {
+        background-color: #28a745;
+        border-left: 4px solid #1e7e34;
+    }
+
+    .alert-toast.error {
+        background-color: #dc3545;
+        border-left: 4px solid #c82333;
+    }
+
+    .alert-toast.warning {
+        background-color: #ffc107;
+        color: #212529;
+        border-left: 4px solid #e0a800;
+    }
+
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    .fade-out {
+        animation: fadeOut 0.5s ease-in forwards;
+    }
+
+    @keyframes fadeOut {
+        from {
+            opacity: 1;
+        }
+        to {
+            opacity: 0;
+        }
+    }
 </style>
 </head>
 <body>
 
         <h2>Quản lý Tài khoản</h2>
-        <a href="{{ route('admin.dashboard') }}" class="btn-back-dashboard">
-            <i class="fas fa-arrow-left"></i> Quay lại Dashboard
-        </a>
+    <a href="{{ route('admin.dashboard') }}" class="btn-back-dashboard">
+        <i class="fas fa-arrow-left"></i> Quay lại Dashboard
+    </a>
 
-@if(session('success'))
-    <div style="padding:8px;background:#e6ffed;border:1px solid #b7f2c8;margin-bottom:12px;">
-        {{ session('success') }}
-    </div>
-@endif
-@if(session('error'))
-    <div style="padding:8px;background:#ffe6e6;border:1px solid #f2b7b7;margin-bottom:12px;">
-        {{ session('error') }}
-    </div>
-@endif
+    {{-- THÔNG BÁO TỪ SERVER --}}
+    @if(session('success'))
+        <div class="alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+    @if(session('error'))
+        <div class="alert-error">
+            {{ session('error') }}
+        </div>
+    @endif
 
 <div class="container">
     <div class="card left">
@@ -352,6 +405,37 @@
     // đang edit?
     let editingUsername = null;
 
+    // HÀM HIỂN THỊ THÔNG BÁO ĐỘNG
+    function showAlert(message, type = 'success') {
+        // Tạo element thông báo
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert-toast ${type}`;
+        alertDiv.innerHTML = `
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <span>${message}</span>
+                <button onclick="this.parentElement.parentElement.remove()" 
+                        style="background: none; border: none; color: inherit; cursor: pointer; margin-left: 10px; font-size: 16px;">
+                    ×
+                </button>
+            </div>
+        `;
+        
+        // Thêm vào body
+        document.body.appendChild(alertDiv);
+        
+        // Tự động xóa sau 5 giây
+        setTimeout(() => {
+            if (alertDiv.parentElement) {
+                alertDiv.classList.add('fade-out');
+                setTimeout(() => {
+                    if (alertDiv.parentElement) {
+                        alertDiv.remove();
+                    }
+                }, 500);
+            }
+        }, 5000);
+    }
+
     function resetForm() {
         editingUsername = null;
         document.getElementById('form-title').innerText = 'Thêm tài khoản';
@@ -360,7 +444,6 @@
         document.getElementById('MatKhau').value = '';
         document.getElementById('LoaiTaiKhoan').value = 'user';
         
-        // THÊM: Enable lại trường mã người dùng khi reset form
         document.getElementById('MaNguoiDung').value = '';
         document.getElementById('MaNguoiDung').removeAttribute('disabled');
         document.getElementById('MaNguoiDung').required = true;
@@ -370,7 +453,6 @@
     }
 
     function onEdit(tenDangNhap) {
-        // fetch data từ server
         fetch(`/admin/taikhoan/${encodeURIComponent(tenDangNhap)}/edit`, {
             method: 'GET',
             headers: {
@@ -379,7 +461,7 @@
             }
         }).then(r => r.json()).then(json => {
             if (!json.success) {
-                alert('Lỗi khi tải dữ liệu tài khoản');
+                showAlert('Lỗi khi tải dữ liệu tài khoản', 'error');
                 return;
             }
             const data = json.data;
@@ -387,20 +469,20 @@
             document.getElementById('form-title').innerText = 'Sửa tài khoản: ' + editingUsername;
             document.getElementById('TenDangNhap').value = data.TenDangNhap;
             document.getElementById('TenDangNhap').setAttribute('readonly', 'readonly');
-            // mật khẩu không hiển thị
             document.getElementById('MatKhau').value = '';
             document.getElementById('LoaiTaiKhoan').value = data.LoaiTaiKhoan || 'user';
             
-            // THÊM: Disable trường mã người dùng khi sửa
             document.getElementById('MaNguoiDung').value = data.MaNguoiDung || '';
             document.getElementById('MaNguoiDung').setAttribute('disabled', 'disabled');
             document.getElementById('MaNguoiDung').required = false;
             
             document.getElementById('submit-btn').innerText = 'Lưu';
             document.getElementById('cancel-btn').style.display = 'inline-block';
+            
+            showAlert('Đã tải thông tin tài khoản thành công', 'success');
         }).catch(err => {
             console.error(err);
-            alert('Lỗi mạng khi lấy dữ liệu');
+            showAlert('Lỗi mạng khi lấy dữ liệu', 'error');
         });
     }
 
@@ -418,13 +500,17 @@
             return r.json().then(j => { throw j; });
         }).then(json => {
             if (json.success) {
-                location.reload();
+                showAlert(json.message || 'Xóa tài khoản thành công!', 'success');
+                // Reload sau 1 giây để hiển thị dữ liệu mới
+                setTimeout(() => {
+                    location.reload();
+                }, 1000);
             } else {
-                alert('Xoá thất bại: ' + (json.message || 'Unknown'));
+                showAlert('Xoá thất bại: ' + (json.message || 'Unknown'), 'error');
             }
         }).catch(err => {
             console.error(err);
-            alert('Lỗi khi xoá, kiểm tra console.');
+            showAlert('Lỗi khi xoá, kiểm tra console.', 'error');
         });
     }
 
@@ -437,17 +523,15 @@
         const maNguoiDung = document.getElementById('MaNguoiDung').value || null;
 
         if (!tenDangNhap) {
-            alert('Vui lòng nhập TenDangNhap');
+            showAlert('Vui lòng nhập tên đăng nhập', 'error');
             return false;
         }
 
-        // THÊM: Kiểm tra bắt buộc mã người dùng khi thêm mới
         if (!editingUsername && !maNguoiDung) {
-            alert('Vui lòng chọn mã người dùng khi thêm tài khoản mới');
+            showAlert('Vui lòng chọn mã người dùng khi thêm tài khoản mới', 'error');
             return false;
         }
 
-        // chuẩn bị payload
         const payload = {
             TenDangNhap: tenDangNhap,
             MatKhau: matKhau,
@@ -461,7 +545,6 @@
             if (editingUsername) {
                 url = `/admin/taikhoan/${encodeURIComponent(editingUsername)}`;
                 method = 'PUT';
-                // THÊM: Khi sửa, không gửi MaNguoiDung vì không cho phép sửa
                 delete payload.MaNguoiDung;
             }
 
@@ -478,26 +561,29 @@
             if (res.ok) {
                 const j = await res.json();
                 if (j.success) {
-                    location.reload();
+                    showAlert(j.message || (editingUsername ? 'Cập nhật tài khoản thành công!' : 'Tạo tài khoản thành công!'), 'success');
+                    // Reload sau 1 giây để hiển thị dữ liệu mới
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
                 } else {
-                    alert('Lỗi server: ' + (j.message || 'unknown'));
+                    showAlert('Lỗi server: ' + (j.message || 'unknown'), 'error');
                 }
             } else {
                 const err = await res.json();
-                // show validation errors if có
                 if (err.errors) {
                     const msgs = [];
                     for (const k in err.errors) {
                         msgs.push(err.errors[k].join(', '));
                     }
-                    alert('Lỗi xác thực:\n' + msgs.join('\n'));
+                    showAlert('Lỗi xác thực:\n' + msgs.join('\n'), 'error');
                 } else {
-                    alert('Lỗi khi gửi form');
+                    showAlert('Lỗi khi gửi form: ' + (err.message || 'Unknown error'), 'error');
                 }
             }
         } catch (error) {
             console.error(error);
-            alert('Lỗi mạng hoặc server');
+            showAlert('Lỗi mạng hoặc server', 'error');
         }
 
         return false;
@@ -511,21 +597,20 @@
             const j = await res.json();
             if (j.success) {
                 const sel = document.getElementById('MaNguoiDung');
-                // giữ option đầu
                 sel.innerHTML = '<option value="">-- Chọn người dùng --</option>';
                 j.data.forEach(u => {
                     const opt = document.createElement('option');
                     opt.value = u.MaNguoiDung;
-                    // nếu có tên hiển thị (HoTen) thì show, nếu không thì chỉ show id
                     opt.textContent = u.MaNguoiDung + (u.HoTen ? ' - ' + u.HoTen : '');
                     sel.appendChild(opt);
                 });
+                showAlert('Đã tải danh sách người dùng chưa có tài khoản thành công', 'success');
             } else {
-                alert('Không tải được danh sách người dùng');
+                showAlert('Không tải được danh sách người dùng', 'error');
             }
         } catch (err) {
             console.error(err);
-            alert('Lỗi khi tải danh sách người dùng chưa có tài khoản');
+            showAlert('Lỗi khi tải danh sách người dùng chưa có tài khoản', 'error');
         }
     }
 

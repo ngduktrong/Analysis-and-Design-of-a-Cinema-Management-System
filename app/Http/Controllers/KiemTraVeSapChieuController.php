@@ -96,16 +96,7 @@ class KiemTraVeSapChieuController extends Controller
                     $khachHangNotified[] = $maKhachHang;
                     $thongBaoCount++;
 
-                    // TODO: Thực hiện gửi thông báo thực tế ở đây
-                    // Ví dụ:
-                    // Notification::create([
-                    //     'MaKhachHang' => $maKhachHang,
-                    //     'NoiDung' => 'Suất chiếu ' . $ve->suatChieu->phim->TenPhim . 
-                    //         ' sẽ bắt đầu lúc ' . 
-                    //         Carbon::parse($ve->suatChieu->NgayGioChieu, 'Asia/Ho_Chi_Minh')->format('H:i d/m/Y'),
-                    //     'Loai' => 'reminder',
-                    //     'TrangThai' => 'sent'
-                    // ]);
+                    
                 }
             }
         }
@@ -124,9 +115,7 @@ class KiemTraVeSapChieuController extends Controller
     }
     public function triggerUserNotification()
 {
-    // ... logic lấy thông tin user và vé sắp chiếu
     
-    // Chuyển hướng đến trang thông báo với chế độ alert
     return redirect()->route('thongbao', ['alert' => 'true']);
 }
 }

@@ -155,7 +155,7 @@
 <header>
     <div>
         <h1>Hệ Thống Quản Lý Rạp Chiếu Phim</h1>
-        <small>T&M Cinema</small>
+        <small>TML Cinema</small>
     </div>
     <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" style="color: white;">
         Đăng xuất

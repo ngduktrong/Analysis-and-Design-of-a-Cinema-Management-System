@@ -446,38 +446,73 @@
 
             // Edit buttons
             document.querySelectorAll('.btn-edit').forEach(button => {
-                button.addEventListener('click', function() {
-                    const userId = this.getAttribute('data-id');
+    button.addEventListener('click', function() {
+        const userId = this.getAttribute('data-id');
+        console.log('Editing user ID:', userId);
 
-                    fetch(`${baseUrl}/${userId}/edit`, { headers: { 'Accept': 'application/json' } })
-                        .then(response => {
-                            if (!response.ok) throw new Error('Không thể lấy dữ liệu người dùng');
-                            return response.json();
-                        })
-                        .then(data => {
-                            // Điền dữ liệu vào form (override old values)
-                            document.getElementById('HoTen').value = data.HoTen || '';
-                            document.getElementById('SoDienThoai').value = data.SoDienThoai || '';
-                            document.getElementById('Email').value = data.Email || '';
-                            document.getElementById('LoaiNguoiDung').value = data.LoaiNguoiDung || '';
+        // Hiển thị loading
+        const originalText = this.innerHTML;
+        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang tải...';
+        this.disabled = true;
 
-                            // chuyển form sang chế độ sửa
-                            form.action = `${baseUrl}/${userId}`;
-                            // chèn _method PUT từ template (tránh inject Blade trực tiếp trong JS)
-                            methodField.innerHTML = methodTemplate.innerHTML;
-                            formTitle.textContent = 'Sửa Thông Tin Người Dùng';
-                            btnSubmit.textContent = 'Cập nhật';
-                            btnCancel.style.display = 'inline-block';
-
-                            // Scroll to form
-                            window.scrollTo({ top: 0, behavior: 'smooth' });
-                        })
-                        .catch(error => {
-                            console.error(error);
-                            alert('Lỗi khi lấy dữ liệu. Vui lòng thử lại.');
-                        });
+        fetch(`${baseUrl}/${userId}/edit`, { 
+            headers: { 
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            } 
+        })
+        .then(response => {
+            console.log('Response status:', response.status);
+            
+            if (!response.ok) {
+                // Nếu response không ok, thử parse lỗi từ JSON
+                return response.json().then(err => { 
+                    throw new Error(err.error || `HTTP error! status: ${response.status}`); 
+                }).catch(() => {
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 });
-            });
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Khôi phục trạng thái nút
+            this.innerHTML = originalText;
+            this.disabled = false;
+
+            // Kiểm tra nếu có lỗi trong data
+            if (data.error) {
+                throw new Error(data.error);
+            }
+
+            console.log('User data received:', data);
+
+            // Điền dữ liệu vào form
+            document.getElementById('HoTen').value = data.HoTen || '';
+            document.getElementById('SoDienThoai').value = data.SoDienThoai || '';
+            document.getElementById('Email').value = data.Email || '';
+            document.getElementById('LoaiNguoiDung').value = data.LoaiNguoiDung || '';
+
+            // Chuyển form sang chế độ sửa
+            form.action = `${baseUrl}/${userId}`;
+            methodField.innerHTML = methodTemplate.innerHTML;
+            formTitle.textContent = 'Sửa Thông Tin Người Dùng';
+            btnSubmit.textContent = 'Cập nhật';
+            btnCancel.style.display = 'inline-block';
+
+            // Scroll to form
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+        })
+        .catch(error => {
+            // Khôi phục trạng thái nút
+            this.innerHTML = originalText;
+            this.disabled = false;
+            
+            console.error('Fetch error:', error);
+            alert('Lỗi khi lấy dữ liệu: ' + error.message);
+        });
+    });
+});
 
             // Hủy - reset về trạng thái thêm mới
             btnCancel.addEventListener('click', function() {

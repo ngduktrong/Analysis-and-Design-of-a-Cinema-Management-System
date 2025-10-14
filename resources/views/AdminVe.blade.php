@@ -378,11 +378,7 @@
                                 <input type="number" class="form-control" id="MaSuatChieu" name="MaSuatChieu" required>
                                 <div class="invalid-feedback" id="error-MaSuatChieu"></div>
                             </div>
-                            <div class="mb-3">
-                                <label for="MaPhong" class="form-label">Mã phòng *</label>
-                                <input type="number" class="form-control" id="MaPhong" name="MaPhong" required>
-                                <div class="invalid-feedback" id="error-MaPhong"></div>
-                            </div>
+                            
                             <div class="mb-3">
                                 <label for="SoGhe" class="form-label">Số ghế *</label>
                                 <input type="text" class="form-control" id="SoGhe" name="SoGhe" maxlength="5" required>
@@ -615,13 +611,12 @@
     
     const formData = new FormData();
     const maSuatChieu = document.getElementById('MaSuatChieu').value;
-    const maPhong = document.getElementById('MaPhong').value;
     const soGhe = document.getElementById('SoGhe').value;
     const maHoaDon = document.getElementById('MaHoaDon').value;
     const giaVe = document.getElementById('GiaVe').value;
 
     // Validate cơ bản
-    if (!maSuatChieu || !maPhong || !soGhe || !giaVe) {
+    if (!maSuatChieu || !soGhe || !giaVe) {
         showAlert('Vui lòng điền đầy đủ các trường bắt buộc', 'danger');
         return;
     }
@@ -632,7 +627,6 @@
     }
 
     formData.append('MaSuatChieu', maSuatChieu);
-    formData.append('MaPhong', maPhong);
     formData.append('SoGhe', soGhe);
     formData.append('GiaVe', giaVe);
     if (maHoaDon) formData.append('MaHoaDon', maHoaDon);
@@ -640,7 +634,6 @@
 
     console.log('Sending ve data:', { 
         MaSuatChieu: maSuatChieu, 
-        MaPhong: maPhong, 
         SoGhe: soGhe, 
         MaHoaDon: maHoaDon, 
         GiaVe: giaVe 
