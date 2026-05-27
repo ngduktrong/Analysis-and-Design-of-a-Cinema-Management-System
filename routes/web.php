@@ -37,6 +37,7 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [RegisterController::class, 'register']);
 
+
 // ========================= ROUTE ADMIN (CÓ AUTH & ROLE) =========================
 Route::middleware(['auth','role:admin'])->group(function () {
     Route::prefix('admin')->group(function () {
@@ -99,21 +100,9 @@ Route::middleware(['auth','role:admin'])->group(function () {
         Route::get('/ve/thongke/sovedathanhtoan', [VeController::class, 'getSoVeDaThanhToan']);
 
         // Quản lý người dùng 
-        Route::get('/nguoidung', [NguoiDungController::class, 'adminIndex'])->name('admin.nguoidung.index');
-        Route::get('/nguoidung/create', [NguoiDungController::class, 'create'])->name('admin.nguoidung.create');
-        Route::post('/nguoidung', [NguoiDungController::class, 'store'])->name('admin.nguoidung.store');
-        Route::get('/nguoidung/{id}/edit', [NguoiDungController::class, 'edit'])->name('admin.nguoidung.edit');
-        Route::put('/nguoidung/{id}', [NguoiDungController::class, 'update'])->name('admin.nguoidung.update');
-        Route::delete('/nguoidung/{id}', [NguoiDungController::class, 'destroy'])->name('admin.nguoidung.destroy');
-
+        
         // Quản lý tài khoản
-        Route::get('/taikhoan', [TaiKhoanController::class, 'adminIndex'])->name('admin.taikhoan.index');
-        Route::get('/taikhoan/users/without-accounts', [TaiKhoanController::class, 'getUsersWithoutAccounts'])->name('admin.taikhoan.users.without.accounts');
-        Route::post('/taikhoan', [TaiKhoanController::class, 'store'])->name('admin.taikhoan.store');
-        Route::get('/taikhoan/{tenDangNhap}/edit', [TaiKhoanController::class, 'edit'])->name('admin.taikhoan.edit')->where('tenDangNhap', '.+');
-        Route::put('/taikhoan/{tenDangNhap}', [TaiKhoanController::class, 'update'])->name('admin.taikhoan.update')->where('tenDangNhap', '.+');
-        Route::delete('/taikhoan/{tenDangNhap}', [TaiKhoanController::class, 'destroy'])->name('admin.taikhoan.destroy')->where('tenDangNhap', '.+');
-
+        
         // Quản lý khách hàng
         Route::get('/khach-hang', [KhachHangController::class, 'index'])->name('admin.khachhang.index');
         Route::get('/khach-hang/check/{maNguoiDung}', [KhachHangController::class, 'checkUser'])->name('admin.khachhang.checkUser');
@@ -135,6 +124,23 @@ Route::middleware(['auth','role:admin'])->group(function () {
         Route::get('/kiem-tra-ve-sap-chieu/thong-bao', [KiemTraVeSapChieuController::class, 'thongBaoVeSapChieu'])->name('admin.kiemtra.thongbao');
     });
 });
+
+
+// ========================= ROUTE NGUOI DUNG =========================
+
+// Quản lý người dùng 
+Route::get('/nguoidung', [NguoiDungController::class, 'adminIndex'])->name('admin.nguoidung.index');
+Route::get('/nguoidung/create', [NguoiDungController::class, 'create'])->name('admin.nguoidung.create');
+Route::post('/nguoidung', [NguoiDungController::class, 'store'])->name('admin.nguoidung.store');
+Route::get('/nguoidung/{id}/edit', [NguoiDungController::class, 'edit'])->name('admin.nguoidung.edit');
+Route::put('/nguoidung/{id}', [NguoiDungController::class, 'update'])->name('admin.nguoidung.update');
+Route::delete('/nguoidung/{id}', [NguoiDungController::class, 'destroy'])->name('admin.nguoidung.destroy');
+Route::get('/taikhoan', [TaiKhoanController::class, 'adminIndex'])->name('admin.taikhoan.index');
+        Route::get('/taikhoan/users/without-accounts', [TaiKhoanController::class, 'getUsersWithoutAccounts'])->name('admin.taikhoan.users.without.accounts');
+        Route::post('/taikhoan', [TaiKhoanController::class, 'store'])->name('admin.taikhoan.store');
+        Route::get('/taikhoan/{tenDangNhap}/edit', [TaiKhoanController::class, 'edit'])->name('admin.taikhoan.edit')->where('tenDangNhap', '.+');
+        Route::put('/taikhoan/{tenDangNhap}', [TaiKhoanController::class, 'update'])->name('admin.taikhoan.update')->where('tenDangNhap', '.+');
+        Route::delete('/taikhoan/{tenDangNhap}', [TaiKhoanController::class, 'destroy'])->name('admin.taikhoan.destroy')->where('tenDangNhap', '.+');
 
 // ========================= ROUTE USER (KHÔNG CÓ AUTH) =========================
 Route::get('/home', [CustomerHomeController::class, 'index'])->name('home');

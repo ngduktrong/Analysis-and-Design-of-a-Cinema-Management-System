@@ -366,7 +366,7 @@
         </tbody>
     </table>
 
-    <!-- Phân trang -->
+   
     <div class="pagination">
         {{ $khachhangs->links() }}
     </div>
@@ -384,13 +384,13 @@
         let currentValidMa = null;
         let checkTimeout = null;
 
-        // Thêm debounce cho kiểm tra mã người dùng
+        
         maEl.addEventListener('input', function() {
             clearTimeout(checkTimeout);
-            checkTimeout = setTimeout(checkMaNguoiDung, 500); // Chờ 500ms sau khi ngừng gõ
+            checkTimeout = setTimeout(checkMaNguoiDung, 500); 
         });
 
-        // Vẫn giữ sự kiện blur để kiểm tra ngay lập tức khi rời khỏi trường
+       
         maEl.addEventListener('blur', function() {
             clearTimeout(checkTimeout);
             checkMaNguoiDung();
@@ -419,13 +419,13 @@
             showLoading();
 
             try {
-                // Thêm tham số is_edit để phân biệt create vs edit
+                
                 const url = `/admin/khach-hang/check/${encodeURIComponent(ma)}${isEdit ? '?is_edit=true' : ''}`;
                 const res = await fetch(url, {
                     headers: { 'Accept': 'application/json' }
                 });
 
-                // Nếu server trả redirect hoặc trang login (HTML), thông báo rõ ràng
+                
                 if (res.status === 401 || res.status === 302) {
                     maMsg.textContent = 'Bạn chưa đăng nhập hoặc không có quyền.';
                     currentValidMa = null;

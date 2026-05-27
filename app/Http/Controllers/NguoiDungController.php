@@ -17,10 +17,13 @@ class NguoiDungController extends BaseCrudController
     protected $primaryKey = 'MaNguoiDung';
 
     public function adminIndex()
-    {
-        $nguoiDungs = NguoiDung::with(['khachHang', 'nhanVien', 'taiKhoan'])->orderBy('created_at', 'desc')->paginate(15);
-        return view('AdminNguoiDung', compact('nguoiDungs'));
-    }
+{
+    $nguoiDungs = NguoiDung::with(['khachHang', 'nhanVien', 'taiKhoan'])
+        ->orderBy('MaNguoiDung', 'desc')
+        ->paginate(15);
+
+    return view('AdminNguoiDung', compact('nguoiDungs'));
+}
 
     public function edit($id)
 {

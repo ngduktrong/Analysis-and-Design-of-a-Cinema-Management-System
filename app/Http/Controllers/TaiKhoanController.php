@@ -64,7 +64,7 @@ class TaiKhoanController extends Controller
             // tạo bản ghi — model hash mật khẩu qua mutator
             $tk = TaiKhoan::create([
                 'TenDangNhap' => $data['TenDangNhap'],
-                'MatKhau' => Hash::make($data['MatKhau']),
+                'MatKhau' => $data['MatKhau'],
                 'LoaiTaiKhoan' => $data['LoaiTaiKhoan'],
                 'MaNguoiDung' => $data['MaNguoiDung'] ?? null,
             ]);
@@ -96,6 +96,11 @@ class TaiKhoanController extends Controller
 
         $data = $request->all();
 
+        // Chuẩn hoá: chuỗi rỗng coi như null để tránh lỗi validate min:6
+        if (isset($data['MatKhau']) && $data['MatKhau'] === '') {
+            $data['MatKhau'] = null;
+        }
+
         $rules = [
             'MatKhau' => 'nullable|string|min:6',
             'LoaiTaiKhoan' => ['required', Rule::in(['admin','user'])],
@@ -111,16 +116,15 @@ class TaiKhoanController extends Controller
         }
 
         try {
-            // Nếu MatKhau rỗng -> giữ nguyên mật khẩu hiện tại
-            $updateData = [
-                'LoaiTaiKhoan' => $data['LoaiTaiKhoan'],
-            ];
+            // Gán từng field riêng để tránh mutator bị trigger không đúng lúc
+            $tk->LoaiTaiKhoan = $data['LoaiTaiKhoan'];
 
+            // Chỉ hash mật khẩu mới nếu người dùng nhập
             if (!empty($data['MatKhau'])) {
-                $updateData['MatKhau'] = Hash::make($data['MatKhau']); 
+                $tk->MatKhau = $data['MatKhau']; // mutator tự hash
             }
 
-            $tk->update($updateData);
+            $tk->save();
 
             if ($request->wantsJson()) {
                 return response()->json([

@@ -7,7 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-    /* Tông màu chủ đạo đen trắng cổ điển */
+    
     :root {
         --primary-color: #2c3e50;
         --secondary-color: #34495e;
@@ -34,7 +34,7 @@
         margin: 0 auto;
     }
 
-    /* Header và tiêu đề */
+    
     h1 {
         color: var(--primary-color);
         font-weight: 600;
@@ -49,7 +49,7 @@
         margin: 0;
     }
 
-    /* Nút quay lại Dashboard và reset */
+    
     .btn-outline-secondary {
         border-color: var(--accent-color);
         color: var(--secondary-color);
@@ -79,7 +79,7 @@
         border-color: #1a252f;
     }
 
-    /* Alert container */
+   
     #alertContainer {
         position: fixed;
         top: 20px;
@@ -88,7 +88,7 @@
         min-width: 300px;
     }
 
-    /* Card styling */
+  
     .card {
         border: 1px solid var(--border-color);
         border-radius: 8px;
@@ -131,7 +131,7 @@
         box-shadow: 0 0 0 0.2rem rgba(127, 140, 141, 0.25);
     }
 
-    /* Validation styles */
+    
     .is-invalid {
         border-color: var(--danger-color) !important;
         background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath d='m5.8 3.6.4.4.4-.4'/%3e%3c/svg%3e");
@@ -147,7 +147,7 @@
         margin-top: 0.25rem;
     }
 
-    /* Button styling */
+    
     .btn {
         border-radius: 4px;
         font-weight: 500;
@@ -512,9 +512,9 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // ============================
+    
     // HÀM DEBUG VÀ XỬ LÝ RESPONSE
-    // ============================
+
     
     function debugResponse(response) {
         console.log('Response status:', response.status);
@@ -538,9 +538,9 @@
         });
     }
 
-    // ============================
+  
     // HÀM HIỂN THỊ VÀ ẨN ALERT
-    // ============================
+   
     
     function showAlert(message, type = 'info') {
         const alertContainer = document.getElementById('alertContainer');
@@ -561,9 +561,9 @@
         alertContainer.innerHTML = '';
     }
 
-    // ============================
+   
     // HÀM XỬ LÝ VALIDATION ERRORS
-    // ============================
+    
     
     function displayErrors(errors) {
         for (const [field, messages] of Object.entries(errors)) {
@@ -599,9 +599,9 @@
         });
     });
 
-    // ============================
+   
     // XỬ LÝ FORM THÊM VÉ
-    // ============================
+    
     
     document.getElementById('formThemVe').addEventListener('submit', function(e) {
     e.preventDefault();
@@ -615,7 +615,7 @@
     const maHoaDon = document.getElementById('MaHoaDon').value;
     const giaVe = document.getElementById('GiaVe').value;
 
-    // Validate cơ bản
+   
     if (!maSuatChieu || !soGhe || !giaVe) {
         showAlert('Vui lòng điền đầy đủ các trường bắt buộc', 'danger');
         return;
@@ -653,7 +653,7 @@
         console.log('Response status:', response.status);
         console.log('Response headers:', response.headers);
         
-        // Kiểm tra nếu response là HTML (có thể là trang login)
+        
         const contentType = response.headers.get('content-type');
         if (contentType && contentType.includes('text/html')) {
             return response.text().then(html => {
@@ -700,9 +700,9 @@
     });
 });
 
-    // ============================
+    
     // CÁC HÀM TÌM KIẾM
-    // ============================
+    
     
     function searchByMaHD() {
         const maHD = document.getElementById('searchMaHD').value;
@@ -760,9 +760,8 @@
             });
     }
 
-    // ============================
     // CÁC HÀM THỐNG KÊ
-    // ============================
+    
     
     function thongKeVeDaThanhToan() {
         console.log('Getting paid tickets stats...');
@@ -788,9 +787,9 @@
             });
     }
 
-    // ============================
+    
     // CẬP NHẬT TABLE
-    // ============================
+   
     
     function updateTable(data) {
         const tbody = document.getElementById('tbodyVe');
@@ -841,9 +840,9 @@
         return date.toLocaleDateString('vi-VN') + ' ' + date.toLocaleTimeString('vi-VN');
     }
 
-    // ============================
+    
     // XÓA VÉ
-    // ============================
+    
     
     function deleteVe(maVe) {
         if (!confirm('Bạn có chắc muốn xóa vé này?')) return;
@@ -876,9 +875,9 @@
         });
     }
 
-    // ============================
+    
     // THANH TOÁN VÉ
-    // ============================
+   
     
     function thanhToanVe(maVe) {
         if (!confirm('Xác nhận thanh toán vé này?')) return;
@@ -908,16 +907,14 @@
         });
     }
 
-    // ============================
-    // RESET TRANG
-    // ============================
+    
     
     function resetPage() {
         console.log('Resetting page...');
         location.reload();
     }
 
-    // Gán sự kiện cho nút reset
+    
     document.addEventListener('DOMContentLoaded', function() {
         const resetBtn = document.querySelector('a[href*="/admin/ve"]');
         if (resetBtn) {

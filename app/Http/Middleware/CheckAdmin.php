@@ -15,7 +15,7 @@ class CheckAdmin
     {
         $user = Auth::user();
 
-        // Giả sử bảng TaiKhoan có cột "VaiTro" (hoặc "role") xác định quyền
+        
         if (!$user || $user->VaiTro !== 'admin') {
             return redirect('/home')->with('error', 'Bạn không có quyền truy cập trang quản trị!');
         }

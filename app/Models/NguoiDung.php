@@ -25,7 +25,7 @@ class NguoiDung extends Model
     ];
 
     // Tự động quản lý timestamps
-    public $timestamps = true;
+    public $timestamps = false;
 
     // Định dạng kiểu dữ liệu cho các thuộc tính
     protected $casts = [

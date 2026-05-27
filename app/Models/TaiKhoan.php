@@ -13,6 +13,7 @@ class TaiKhoan extends Authenticatable // THAY ĐỔI: extends Authenticatable t
     protected $primaryKey = 'TenDangNhap';
     public $incrementing = false;
     protected $keyType = 'string';
+    public $timestamps = false; 
 
     // Cho phép mass assignment cho các trường cần thiết
     protected $fillable = [
@@ -45,29 +46,26 @@ class TaiKhoan extends Authenticatable // THAY ĐỔI: extends Authenticatable t
 
     public function getRememberToken()
     {
-        return $this->remember_token;
+        return null;
     }
 
     public function setRememberToken($value)
     {
-        $this->remember_token = $value;
+        // Bảng TaiKhoan không có cột remember_token, bỏ qua
     }
 
     public function getRememberTokenName()
     {
-        return 'remember_token';
+        return ''; // Trả về rỗng để Laravel không cố update cột này
     }
 
     // Mutator: tự hash mật khẩu khi set (nếu chưa được hash)
     public function setMatKhauAttribute($value)
     {
         if (empty($value)) {
-            // không thay đổi nếu trống (chủ động xử lý ở controller)
-            $this->attributes['MatKhau'] = $this->attributes['MatKhau'] ?? null;
-            return;
+            return; // không làm gì, giữ nguyên giá trị trong DB
         }
 
-        // nếu đã là bcrypt (bắt đầu bằng $2y$ hoặc $2a$) thì giữ nguyên
         if (is_string($value) && (str_starts_with($value, '$2y$') || str_starts_with($value, '$2a$'))) {
             $this->attributes['MatKhau'] = $value;
         } else {

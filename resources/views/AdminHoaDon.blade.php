@@ -519,9 +519,9 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // ============================
+   
     // HÀM DEBUG VÀ XỬ LÝ RESPONSE
-    // ============================
+    
     
     function debugResponse(response) {
         console.log('Response status:', response.status);
@@ -536,7 +536,7 @@
                 return jsonData;
             } catch (e) {
                 console.error('Failed to parse JSON:', e);
-                // Nếu không phải JSON, trả về text để xử lý
+               
                 return { 
                     success: false, 
                     message: 'Server returned non-JSON response',
@@ -546,9 +546,9 @@
         });
     }
 
-    // ============================
+  
     // HÀM HIỂN THỊ VÀ ẨN ALERT
-    // ============================
+    
     
     function showAlert(message, type = 'info') {
         const alertContainer = document.getElementById('alertContainer');
@@ -570,9 +570,9 @@
         alertContainer.innerHTML = '';
     }
 
-    // ============================
+   
     // HÀM XỬ LÝ VALIDATION ERRORS
-    // ============================
+   
     
     function displayErrors(errors) {
         for (const [field, messages] of Object.entries(errors)) {
@@ -595,7 +595,7 @@
         });
     }
 
-    // Reset lỗi khi người dùng bắt đầu nhập
+   
     document.querySelectorAll('#formThemHoaDon input').forEach(input => {
         input.addEventListener('input', function() {
             if (this.classList.contains('is-invalid')) {
@@ -608,9 +608,9 @@
         });
     });
 
-    // ============================
+    
     // XỬ LÝ FORM THÊM HÓA ĐƠN
-    // ============================
+    
     
     document.getElementById('formThemHoaDon').addEventListener('submit', function(e) {
         e.preventDefault();
@@ -624,7 +624,7 @@
         const maKH = document.getElementById('MaKhachHang').value;
         const tongTien = document.getElementById('TongTien').value;
 
-        // Validate cơ bản
+       
         if (!tongTien || tongTien <= 0) {
             showAlert('Vui lòng nhập tổng tiền hợp lệ', 'danger');
             return;
@@ -652,7 +652,7 @@
             if (data.success) {
                 showAlert('Tạo hóa đơn thành công! Mã hóa đơn: ' + data.MaHoaDon, 'success');
                 document.getElementById('formThemHoaDon').reset();
-                // Tự động reload sau 2 giây
+               
                 setTimeout(() => {
                     location.reload();
                 }, 2000);
@@ -670,9 +670,9 @@
         });
     });
 
-    // ============================
+   
     // CÁC HÀM TÌM KIẾM
-    // ============================
+    
     
     function searchByMaKH() {
         const maKH = document.getElementById('searchMaKH').value;
@@ -761,9 +761,9 @@
         });
     }
 
-    // ============================
+   
     // CÁC HÀM THỐNG KÊ
-    // ============================
+    
     
     function thongKeTheoNgay() {
         const ngay = document.getElementById('thongKeNgay').value;
@@ -834,9 +834,9 @@
         });
     }
 
-    // ============================
+    
     // CẬP NHẬT TABLE
-    // ============================
+    
     
     function updateTable(data) {
         const tbody = document.getElementById('tbodyHoaDon');
@@ -877,9 +877,9 @@
         return date.toLocaleDateString('vi-VN') + ' ' + date.toLocaleTimeString('vi-VN');
     }
 
-    // ============================
+    
     // XÓA HÓA ĐƠN
-    // ============================
+    
     
     function deleteHoaDon(maHoaDon) {
         if (!confirm('Bạn có chắc muốn xóa hóa đơn này?')) return;
@@ -898,7 +898,7 @@
                 showAlert('Xóa hóa đơn thành công!', 'success');
                 document.getElementById(`row-${maHoaDon}`).remove();
                 
-                // Nếu không còn dòng nào, hiển thị thông báo
+               
                 const tbody = document.getElementById('tbodyHoaDon');
                 if (tbody.children.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="7" class="text-center">Không có dữ liệu</td></tr>';
@@ -913,9 +913,9 @@
         });
     }
 
-    // ============================
+    
     // ĐỒNG BỘ NGÀY LẬP
-    // ============================
+   
     
     function syncNgayLap(maHoaDon) {
         console.log('Syncing date for hoadon:', maHoaDon);
@@ -943,16 +943,14 @@
         });
     }
 
-    // ============================
-    // RESET TRANG
-    // ============================
+   
     
     function resetPage() {
         console.log('Resetting page...');
         location.reload();
     }
 
-    // Gán sự kiện cho nút reset nếu có
+   
     document.addEventListener('DOMContentLoaded', function() {
         const resetBtn = document.querySelector('a[href*="/admin/hoadon"]');
         if (resetBtn) {

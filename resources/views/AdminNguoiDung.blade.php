@@ -437,20 +437,20 @@
             const methodField = document.getElementById('method-field');
             const methodTemplate = document.getElementById('method-put-template');
 
-            // URLs from Blade
-            const baseUrl = "{{ url('admin/nguoidung') }}"; // /admin/nguoidung
+           
+            const baseUrl = "{{ url('admin/nguoidung') }}"; 
             const storeUrl = "{{ route('admin.nguoidung.store') }}";
 
-            // Ensure initial action
+           
             form.action = storeUrl;
 
-            // Edit buttons
+           
             document.querySelectorAll('.btn-edit').forEach(button => {
     button.addEventListener('click', function() {
         const userId = this.getAttribute('data-id');
         console.log('Editing user ID:', userId);
 
-        // Hiển thị loading
+        
         const originalText = this.innerHTML;
         this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang tải...';
         this.disabled = true;
@@ -465,7 +465,7 @@
             console.log('Response status:', response.status);
             
             if (!response.ok) {
-                // Nếu response không ok, thử parse lỗi từ JSON
+               
                 return response.json().then(err => { 
                     throw new Error(err.error || `HTTP error! status: ${response.status}`); 
                 }).catch(() => {
@@ -475,36 +475,36 @@
             return response.json();
         })
         .then(data => {
-            // Khôi phục trạng thái nút
+            
             this.innerHTML = originalText;
             this.disabled = false;
 
-            // Kiểm tra nếu có lỗi trong data
+            
             if (data.error) {
                 throw new Error(data.error);
             }
 
             console.log('User data received:', data);
 
-            // Điền dữ liệu vào form
+            
             document.getElementById('HoTen').value = data.HoTen || '';
             document.getElementById('SoDienThoai').value = data.SoDienThoai || '';
             document.getElementById('Email').value = data.Email || '';
             document.getElementById('LoaiNguoiDung').value = data.LoaiNguoiDung || '';
 
-            // Chuyển form sang chế độ sửa
+            
             form.action = `${baseUrl}/${userId}`;
             methodField.innerHTML = methodTemplate.innerHTML;
             formTitle.textContent = 'Sửa Thông Tin Người Dùng';
             btnSubmit.textContent = 'Cập nhật';
             btnCancel.style.display = 'inline-block';
 
-            // Scroll to form
+            
             window.scrollTo({ top: 0, behavior: 'smooth' });
             
         })
         .catch(error => {
-            // Khôi phục trạng thái nút
+          
             this.innerHTML = originalText;
             this.disabled = false;
             
@@ -514,7 +514,7 @@
     });
 });
 
-            // Hủy - reset về trạng thái thêm mới
+           
             btnCancel.addEventListener('click', function() {
                 form.reset();
                 form.action = storeUrl;
@@ -524,16 +524,16 @@
                 btnCancel.style.display = 'none';
             });
 
-            // Optional: client-side minimal validation before submit (HTML5 required already)
+           
             form.addEventListener('submit', function(e) {
-                // Example: ensure LoaiNguoiDung is selected
+               
                 const loai = document.getElementById('LoaiNguoiDung').value;
                 if (!loai) {
                     e.preventDefault();
                     alert('Vui lòng chọn loại người dùng');
                     return;
                 }
-                // Nút submit sẽ gửi form bình thường — server sẽ trả về errors nếu có.
+               
             });
         });
     </script>

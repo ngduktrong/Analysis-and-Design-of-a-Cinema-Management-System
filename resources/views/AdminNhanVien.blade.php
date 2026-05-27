@@ -340,7 +340,7 @@
     let isEditMode = false;
     let currentEditId = null;
 
-    // CSRF setup
+    
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -361,7 +361,7 @@
         }, 5000);
     }
 
-    // Kiểm tra mã người dùng tồn tại - SỬA LẠI
+    // Kiểm tra mã người dùng tồn tại
     $('#MaNguoiDung').on('blur', function() {
         const maNguoiDung = $(this).val();
         if (maNguoiDung) {
@@ -391,7 +391,7 @@
         }
     });
 
-    // Xử lý submit form - SỬA LẠI
+    // Xử lý submit form 
     $('#nhanvien-form').on('submit', function(e) {
         e.preventDefault();
         
@@ -438,7 +438,7 @@
         });
     });
 
-    // Sửa nhân viên - SỬA LẠI
+    // Sửa nhân viên 
     $('.edit-btn').on('click', function() {
         const id = $(this).data('id');
         const editUrl = '{{ route("admin.nhanvien.edit", ["id" => "__ID__"]) }}'.replace('__ID__', id);
@@ -471,7 +471,7 @@
         });
     });
 
-    // Xóa nhân viên - SỬA LẠI
+    // Xóa nhân viên 
     $('.delete-btn').on('click', function() {
         if (confirm('Bạn có chắc chắn muốn xóa nhân viên này?')) {
             const id = $(this).data('id');

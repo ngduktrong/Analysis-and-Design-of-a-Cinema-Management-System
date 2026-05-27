@@ -17,18 +17,16 @@ class ThongBaoController extends Controller
         $this->middleware('auth');
     }
 
-    /**
-     * Hiển thị vé sắp chiếu cho user đang đăng nhập.
-     */
+    
     public function index(Request $request)
     {
         $taiKhoan = Auth::user();
         $now = Carbon::now('Asia/Ho_Chi_Minh');
 
-        // Kiểm tra xem có phải là chế độ thông báo không
+       
         $isAlertMode = $request->has('alert') && $request->get('alert') == 'true';
 
-        // Lấy MaNguoiDung từ tài khoản
+       
         $maNguoiDung = $taiKhoan->MaNguoiDung ?? null;
         if (!$maNguoiDung) {
             return view('ThongBao', [
@@ -37,22 +35,22 @@ class ThongBaoController extends Controller
             ]);
         }
 
-        // Tên bảng Ve
+        
         $veTable = (new Ve())->getTable();
 
-        // Bắt đầu query: Ve (v) join HoaDon (h) join SuatChieu (s)
+       
         $query = DB::table($veTable . ' as v')
             ->leftJoin('HoaDon as h', 'v.MaHoaDon', '=', 'h.MaHoaDon')
             ->leftJoin('SuatChieu as s', 'v.MaSuatChieu', '=', 's.MaSuatChieu');
 
-        // Nếu có bảng Phim và SuatChieu.MaPhim thì join để lấy tên phim
+       
         $joinPhim = false;
         if (Schema::hasTable('Phim') && Schema::hasColumn('SuatChieu', 'MaPhim')) {
             $query->leftJoin('Phim as p', 's.MaPhim', '=', 'p.MaPhim');
             $joinPhim = true;
         }
 
-        // Lọc: chỉ vé thuộc hóa đơn của người dùng hiện tại
+       
         if (Schema::hasColumn('HoaDon', 'MaKhachHang')) {
             $query->where('h.MaKhachHang', $maNguoiDung);
         } else {
@@ -62,16 +60,16 @@ class ThongBaoController extends Controller
             ]);
         }
 
-        // Lọc vé theo chế độ
+       
         if ($isAlertMode) {
-            // CHẾ ĐỘ THÔNG BÁO: chỉ vé sắp chiếu trong vòng 1 giờ tới
+           
             $oneHourLater = $now->copy()->addHour();
             if (Schema::hasColumn('SuatChieu', 'NgayGioChieu')) {
                 $query->whereBetween('s.NgayGioChieu', [$now, $oneHourLater]);
                 $query->orderBy('s.NgayGioChieu', 'asc');
             }
         } else {
-            // CHẾ ĐỘ THÔNG THƯỜNG: vé sắp chiếu trong tương lai
+           
             if (Schema::hasColumn('SuatChieu', 'NgayGioChieu')) {
                 $query->where('s.NgayGioChieu', '>', $now);
                 $query->orderBy('s.NgayGioChieu', 'asc');
@@ -88,7 +86,7 @@ class ThongBaoController extends Controller
             }
         }
 
-        // Chọn cột trả về (chuẩn hoá)
+       
         $selects = [
             'v.MaVe as MaVe',
             'v.SoGhe as SoGhe',
@@ -109,7 +107,7 @@ class ThongBaoController extends Controller
                       ->distinct()
                       ->get();
 
-        // Chuẩn hoá sang cấu trúc đơn giản cho view
+        
         $ves = $rows->map(function ($r) {
             $movie = $r->TenPhim ?? ($r->MaPhim ?? null);
             $showtime = $r->NgayGioChieu ?? null;

@@ -12,14 +12,14 @@ class KiemTraVeSapChieuController extends Controller
 {
     public function index()
     {
-        // ✅ Lấy thời gian hiện tại theo múi giờ Việt Nam
+        
         $now = Carbon::now('Asia/Ho_Chi_Minh');
         return view('KiemTraVeSapChieu', compact('now'));
     }
 
     public function danhSachVeSapChieu()
     {
-        // ✅ Dùng múi giờ Việt Nam để đảm bảo thời gian chính xác
+        
         $now = Carbon::now('Asia/Ho_Chi_Minh');
         $oneHourLater = $now->copy()->addHour();
 
@@ -72,7 +72,7 @@ class KiemTraVeSapChieuController extends Controller
 
     public function thongBaoVeSapChieu()
     {
-        // ✅ Dùng múi giờ Việt Nam để đảm bảo đúng giờ chiếu thực tế
+       
         $now = Carbon::now('Asia/Ho_Chi_Minh');
         $oneHourLater = $now->copy()->addHour();
 

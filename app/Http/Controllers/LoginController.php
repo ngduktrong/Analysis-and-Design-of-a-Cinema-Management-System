@@ -20,17 +20,17 @@ class LoginController extends Authenticatable
         $request->validate([
             'TenDangNhap' => 'required',
             'MatKhau' => 'required',
-            // ĐÃ XÓA: validation cho LoaiTaiKhoan
+           
         ]);
 
-        // CHỈ tìm theo tên đăng nhập, không tìm theo LoaiTaiKhoan nữa
+        
         $taiKhoan = TaiKhoan::where('TenDangNhap', $request->TenDangNhap)->first();
 
         // Kiểm tra tài khoản tồn tại và mật khẩu đúng
         if ($taiKhoan && Hash::check($request->MatKhau, $taiKhoan->MatKhau)) {
             Auth::login($taiKhoan);
             
-            // Chuyển hướng dựa vào LoaiTaiKhoan trong database
+           
             if ($taiKhoan->LoaiTaiKhoan === 'admin') {
                 return redirect()->route('admin.dashboard');
             } else {

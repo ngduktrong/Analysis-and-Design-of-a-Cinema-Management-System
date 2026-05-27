@@ -453,7 +453,7 @@
     }
 
     function onEdit(tenDangNhap) {
-        fetch(`/admin/taikhoan/${encodeURIComponent(tenDangNhap)}/edit`, {
+        fetch(`/taikhoan/${encodeURIComponent(tenDangNhap)}/edit`, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -489,7 +489,7 @@
     function onDelete(tenDangNhap) {
         if (!confirm('Bạn có chắc muốn xoá tài khoản "' + tenDangNhap + '" ?')) return;
 
-        fetch(`/admin/taikhoan/${encodeURIComponent(tenDangNhap)}`, {
+        fetch(`/taikhoan/${encodeURIComponent(tenDangNhap)}`, {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',
@@ -543,7 +543,7 @@
             let url = storeUrl;
             let method = 'POST';
             if (editingUsername) {
-                url = `/admin/taikhoan/${encodeURIComponent(editingUsername)}`;
+                url = `/taikhoan/${encodeURIComponent(editingUsername)}`;
                 method = 'PUT';
                 delete payload.MaNguoiDung;
             }

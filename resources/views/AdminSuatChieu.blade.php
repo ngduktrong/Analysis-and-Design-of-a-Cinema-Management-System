@@ -307,7 +307,7 @@
         margin-top: 1.5rem !important;
     }
 
-    /* Icon spacing */
+   
     .fas {
         margin-right: 0.5rem;
     }
@@ -461,7 +461,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Kiểm tra nếu URL có tham số edit thì tự động cuộn đến form
+            
             const urlParams = new URLSearchParams(window.location.search);
             const editId = urlParams.get('edit');
             if (editId) {
@@ -475,7 +475,7 @@
                 const now = new Date();
                 if (selectedDate < now) {
                     this.classList.add('is-invalid');
-                    // Tạo thông báo lỗi nếu chưa có
+                    
                     if (!this.nextElementSibling || !this.nextElementSibling.classList.contains('invalid-feedback')) {
                         const errorDiv = document.createElement('div');
                         errorDiv.className = 'invalid-feedback';
@@ -484,7 +484,7 @@
                     }
                 } else {
                     this.classList.remove('is-invalid');
-                    // Xóa thông báo lỗi nếu có
+                    
                     const errorDiv = this.nextElementSibling;
                     if (errorDiv && errorDiv.classList.contains('invalid-feedback')) {
                         errorDiv.remove();
